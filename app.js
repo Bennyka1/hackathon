@@ -1,6 +1,10 @@
 /*-----------------------------------------------------------------------------
 A simple Language Understanding (LUIS) bot for the Microsoft Bot Framework. 
 -----------------------------------------------------------------------------*/
+<<<<<<< HEAD
+=======
+
+>>>>>>> a0a11bf7e3bebab6dc6b518bacffdb6e0b2fb7df
 var restify = require('restify');
 var builder = require('botbuilder');
 var botbuilder_azure = require("botbuilder-azure");
