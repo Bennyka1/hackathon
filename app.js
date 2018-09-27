@@ -35,7 +35,7 @@ server.post('/api/messages', connector.listen());
 // Create your bot with a function to receive messages from the user
 // This default message handler is invoked if the user's utterance doesn't
 // match any intents handled by other dialogs.
-var bot = new builder.UniversalBot(connector, function (session, args) {
+var bot = new builder.UniversalBot(connector, function (session) {
     session.send('You reached the default message handler. You said \'%s\'.', session.message.text);
 });
 
@@ -54,50 +54,9 @@ bot.recognizer(recognizer);
 
 // Add a dialog for each intent that the LUIS app recognizes.
 // See https://docs.microsoft.com/en-us/bot-framework/nodejs/bot-builder-nodejs-recognize-intent-luis 
-bot.dialog('GreetingDialog',
-    (session) => {
-        session.send('You reached the Greeting intent. You said \'%s\'.', session.message.text);
-        session.endDialog();
-    }
-).triggerAction({
-    matches: 'Greeting'
-})
-
-bot.dialog('HelpDialog',
-    (session) => {
-        session.send('You reached the Help intent. You said \'%s\'.', session.message.text);
-        session.endDialog();
-    }
-).triggerAction({
-    matches: 'Help'
-})
-
-bot.dialog('CancelDialog',
-    (session) => {
-        session.send('You reached the Cancel intent. You said \'%s\'.', session.message.text);
-        session.endDialog();
-    }
-).triggerAction({
-    matches: 'Cancel'
-})
-bot.dialog('QuestionsManual',{
-    function (session, args, next) {
-        session.send('Hallo wir bearbeiten deine Frage: \'%s\'', session.message.text);
-    // try extracting entities
-        var ManualitemEntity = builder.EntityRecognizer.findEntity(args.intent.entities,
-                        'Manualitem');
-    if (ManualitemEntity) {
-    // city entity detected, continue to next step
-        session.dialogData.searchType = 'Manualitem';
-            next({ response: ManualitemEntity.entity });
-    } else {
-    // no entities detected, ask user for a destination
-        builder.Prompts.text(session, 'ich habe keine Entity erkannt');
-    }
-},
+bot.dialog('QuestionsManual', (session) => {
+    session.send('Hallo user! Wie kann ich Ihnen helfen');
+    session.endDialog();
 }).triggerAction({
-    matches: 'QuestionsManual',
-    onInterrupted: function (session) {
-        session.send('blblblblblblb');
-    }
-    });
+    matches: 'QuestionsManual'
+});
