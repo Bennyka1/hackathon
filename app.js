@@ -28,9 +28,9 @@ server.post('/api/messages', connector.listen());
 * For samples and documentation, see: https://github.com/Microsoft/BotBuilder-Azure
 * ---------------------------------------------------------------------------------------- */
 
-var tableName = 'botdata';
-var azureTableClient = new botbuilder_azure.AzureTableClient(tableName, process.env['AzureWebJobsStorage']);
-var tableStorage = new botbuilder_azure.AzureBotStorage({ gzipData: false }, azureTableClient);
+//var tableName = 'botdata';
+//var azureTableClient = new botbuilder_azure.AzureTableClient(tableName, process.env['AzureWebJobsStorage']);
+//var tableStorage = new botbuilder_azure.AzureBotStorage({ gzipData: false }, azureTableClient);
 
 // Create your bot with a function to receive messages from the user
 // This default message handler is invoked if the user's utterance doesn't
@@ -39,7 +39,7 @@ var bot = new builder.UniversalBot(connector, function (session, args) {
     session.send('You reached the default message handler. You said \'%s\'.', session.message.text);
 });
 
-bot.set('storage', tableStorage);
+//bot.set('storage', tableStorage);
 
 // Make sure you add code to validate these fields
 var luisAppId = process.env.LuisAppId;
@@ -80,4 +80,24 @@ bot.dialog('CancelDialog',
 ).triggerAction({
     matches: 'Cancel'
 })
-
+bot.dialog('QuestionsManual'{
+    function (session, args, next) {
+        session.send('Hallo wir bearbeiten deine Frage: \'%s\'', session.message.text);
+    // try extracting entities
+        var ManualitemEntity = builder.EntityRecognizer.findEntity(args.intent.entities,
+                        'Manualitem');
+    if (ManualitemEntity) {
+    // city entity detected, continue to next step
+        session.dialogData.searchType = 'Manualitem';
+            next({ response: ManualitemEntity.entity });
+    } else {
+    // no entities detected, ask user for a destination
+        builder.Prompts.text(session, 'ich habe keine Entity erkannt');
+    }
+},
+}).triggerAction({
+    matches: 'QuestionsManual',
+    onInterrupted: function (session) {
+        session.send('blblblblblblb');
+    }
+    });
