@@ -80,7 +80,7 @@ bot.dialog('CancelDialog',
 ).triggerAction({
     matches: 'Cancel'
 })
-bot.dialog('QuestionsManual'{
+bot.dialog('QuestionsManual',{
     function (session, args, next) {
         session.send('Hallo wir bearbeiten deine Frage: \'%s\'', session.message.text);
     // try extracting entities
