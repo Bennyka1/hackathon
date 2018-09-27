@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------------------
-A simple Language Understanding (LUIS) bot for the Microsoft Bot Framework. 
+A simple echo bot for the Microsoft Bot Framework. 
 -----------------------------------------------------------------------------*/
 
 var restify = require('restify');
@@ -29,35 +29,62 @@ server.post('/api/messages', connector.listen());
 * For samples and documentation, see: https://github.com/Microsoft/BotBuilder-Azure
 * ---------------------------------------------------------------------------------------- */
 
-//var tableName = 'botdata';
-//var azureTableClient = new botbuilder_azure.AzureTableClient(tableName, process.env['AzureWebJobsStorage']);
-//var tableStorage = new botbuilder_azure.AzureBotStorage({ gzipData: false }, azureTableClient);
+var tableName = 'botdata';
+var azureTableClient = new botbuilder_azure.AzureTableClient(tableName, process.env['AzureWebJobsStorage']);
+var tableStorage = new botbuilder_azure.AzureBotStorage({ gzipData: false }, azureTableClient);
 
 // Create your bot with a function to receive messages from the user
-// This default message handler is invoked if the user's utterance doesn't
-// match any intents handled by other dialogs.
-var bot = new builder.UniversalBot(connector, function (session) {
-    session.send('You reached the default message handler. You said \'%s\'.', session.message.text);
+var bot = new builder.UniversalBot(connector);
+bot.set('storage', tableStorage);
+
+// Recognizer and and Dialog for preview QnAMaker service
+var previewRecognizer = new builder_cognitiveservices.QnAMakerRecognizer({
+    knowledgeBaseId: '/26302249-c62b-446c-b0a2-8eec379cb9f1',
+    authKey: 'bccc6ec1-a75f-47e3-bbf7-446b0d8def48' || process.env.QnASubscriptionKey
 });
 
-//bot.set('storage', tableStorage);
+var basicQnAMakerPreviewDialog = new builder_cognitiveservices.QnAMakerDialog({
+    recognizers: [previewRecognizer],
+    defaultMessage: 'No match! Try changing the query terms!',
+    qnaThreshold: 0.3
+}
+);
 
-// Make sure you add code to validate these fields
-var luisAppId = process.env.LuisAppId;
-var luisAPIKey = process.env.LuisAPIKey;
-var luisAPIHostName = process.env.LuisAPIHostName || 'westeurope.api.cognitive.microsoft.com';
+bot.dialog('basicQnAMakerPreviewDialog', basicQnAMakerPreviewDialog);
 
-const LuisModelUrl = 'https://westeurope.api.cognitive.microsoft.com/luis/v2.0/apps/0d3222b3-0b5f-48ce-b5cd-ffd99b01e9ea?subscription-key=18a62222b9aa4d2c96f6dbc4eeb7b738&spellCheck=true&bing-spell-check-subscription-key={YOUR_BING_KEY_HERE}&timezoneOffset=60&q='
-
-// Create a recognizer that gets intents from LUIS, and add it to the bot
-var recognizer = new builder.LuisRecognizer(LuisModelUrl);
-bot.recognizer(recognizer);
-
-// Add a dialog for each intent that the LUIS app recognizes.
-// See https://docs.microsoft.com/en-us/bot-framework/nodejs/bot-builder-nodejs-recognize-intent-luis 
-bot.dialog('QuestionsManual', (session) => {
-    session.send('Hallo user! Wie kann ich Ihnen helfen');
-    session.endDialog();
-}).triggerAction({
-    matches: 'QuestionsManual'
+// Recognizer and and Dialog for GA QnAMaker service
+var recognizer = new builder_cognitiveservices.QnAMakerRecognizer({
+    knowledgeBaseId: process.env.QnAKnowledgebaseId,
+    authKey: process.env.QnAAuthKey || process.env.QnASubscriptionKey, // Backward compatibility with QnAMaker (Preview)
+    endpointHostName: process.env.QnAEndpointHostName
 });
+
+var basicQnAMakerDialog = new builder_cognitiveservices.QnAMakerDialog({
+    recognizers: [recognizer],
+    defaultMessage: 'No match! Try changing the query terms!',
+    qnaThreshold: 0.3
+}
+);
+
+bot.dialog('basicQnAMakerDialog', basicQnAMakerDialog);
+
+bot.dialog('/', //basicQnAMakerDialog);
+    [
+        function (session) {
+            var qnaKnowledgebaseId = process.env.QnAKnowledgebaseId;
+            var qnaAuthKey = process.env.QnAAuthKey || process.env.QnASubscriptionKey;
+            var endpointHostName = process.env.QnAEndpointHostName;
+
+            // QnA Subscription Key and KnowledgeBase Id null verification
+            if ((qnaAuthKey == null || qnaAuthKey == '') || (qnaKnowledgebaseId == null || qnaKnowledgebaseId == ''))
+                session.send('Please set QnAKnowledgebaseId, QnAAuthKey and QnAEndpointHostName (if applicable) in App Settings. Learn how to get them at https://aka.ms/qnaabssetup.');
+            else {
+                if (endpointHostName == null || endpointHostName == '')
+                    // Replace with Preview QnAMakerDialog service
+                    session.replaceDialog('basicQnAMakerPreviewDialog');
+                else
+                    // Replace with GA QnAMakerDialog service
+                    session.replaceDialog('basicQnAMakerDialog');
+            }
+        }
+    ]);
