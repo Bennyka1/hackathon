@@ -6,7 +6,9 @@ var restify = require('restify');
 var builder = require('botbuilder');
 var botbuilder_azure = require("botbuilder-azure");
 var builder_cognitiveservices = require("botbuilder-cognitiveservices");
+const jokes = require("./Jokes");
 var msg;
+var ausgedachtezahl;
 var carCompany;
 
 var symbolcomputer;
@@ -124,11 +126,10 @@ bot.dialog('secondQnAMakerDialog', secondQnAMakerDialog);
 /*********************************************************
  * 
  * Welcome Message
- * 
+ * ToDo
  * 
  * 
  **********************************************************/
-
 
 bot.on('conversationUpdate', function (message) {
   if (message.membersAdded) {
@@ -142,6 +143,13 @@ bot.on('conversationUpdate', function (message) {
   }
 });
 
+/*********************************************************
+ * 
+ * Default Indent
+ * ToDo
+ * 
+ * 
+ **********************************************************/
 
 bot.dialog('/',(session) => {
   console.log(carCompany);
@@ -161,10 +169,10 @@ bot.dialog('/',(session) => {
  * 
  **********************************************************/
 
-bot.dialog('SchereSteinPapier',(session) => {
-
-    var ausgedachtezahl = Math.random() * 3;
-    ausgedachtezahl = Math.round(ausgedachtezahl + 0, 5);
+ function randomzahl(){
+    
+    ausgedachtezahl = Math.random() * 3;
+    ausgedachtezahl = Math.round(ausgedachtezahl + 0.5);
 
     if (ausgedachtezahl == 1) {
       symbolcomputer = "Schere"
@@ -175,71 +183,76 @@ bot.dialog('SchereSteinPapier',(session) => {
     if (ausgedachtezahl == 3) {
       symbolcomputer = "Papier";
     };
-
-    session.send("Schere Stein oder Papier?");
     
+  }
+
+  bot.dialog('SchereSteinPapier',(session) => {
+
+    randomzahl();
+
+    session.send("Schere Stein oder Papier? ");
+    
+
   }).triggerAction({
     matches: 'SchereSteinPapier'
   });
 
-  bot.dialog('stein',(session) => {
-    symbolspieler = "Stein";
+  bot.dialog('SchereSteinPapierAntwort',(session) => {
+    
+    randomzahl();
+    
+    if (session.message.text == "Schere" ){
+      symbolspieler = "Schere";
+    }
+    if (session.message.text == "Stein" ){
+      symbolspieler = "Stein";
+    }
+    if (session.message.text == "Papier" ){
+      symbolspieler = "Papier";
+    }
+    
+    if (session.message.text == "MSG"){
+      session.send("DIE MSG GEWINNT IMMER!");
+      symbolspieler = "";
+    }
+    
+    
     if (symbolcomputer == "Schere" && symbolspieler == "Stein") {
       session.send("Du gewinnst gegen Schere");
+      gewinnespieler++;
     }
     if (symbolcomputer == "Papier" && symbolspieler == "Stein") {
       session.send("Computer gewinnt mit Papier");
-      gewinnespieler++;
+      gewinnecomputer++;
+     
     }
-
-    if (symbolspieler == symbolcomputer) {
-      session.send("Spiel unentschieden");
-    }
-    session.endDialog();
-
-
-  }).triggerAction({
-    matches: 'SchereSteinPapierAntwort'
-  });
-
-
-  bot.dialog('schere',(session) => {
-    symbolspieler = "Schere";
+    
     if (symbolcomputer == "Stein" && symbolspieler == "Schere") {
       session.send("Computer gewinnt mit Stein");
-      gewinnespieler++;
+      gewinnecomputer++;
+      
     }
     if (symbolcomputer == "Papier" && symbolspieler == "Schere") {
-      session.send("Du gewinnst mit Papier");
+      session.send("Du gewinnst gegen Papier");
       gewinnespieler++;
     }
+
     if (symbolspieler == symbolcomputer) {
       session.send("Spiel unentschieden");
-    }
-    session.endDialog();
-
-
-  }).triggerAction({
-    matches: 'SchereSteinPapierAntwort'
-  });
-
-  bot.dialog('papier',(session) => {
-    symbolspieler = "Papier";
-
+    }  
+    
     if (symbolcomputer == "Schere" && symbolspieler == "Papier") {
       session.send("Computer gewinnt mit Schere");
-      gewinnespieler++;
+      gewinnecomputer++;
     }
 
     if (symbolcomputer == "Stein" && symbolspieler == "Papier") {
       session.send("Du gewinnst gegen Stein");
       gewinnespieler++;
     }
-
-    if (symbolspieler == symbolcomputer) {
-      session.send("Spiel unentschieden");
-    }
+    
     session.endDialog();
+
 
   }).triggerAction({
     matches: 'SchereSteinPapierAntwort'
@@ -248,20 +261,34 @@ bot.dialog('SchereSteinPapier',(session) => {
 
 /*********************************************************
  * 
- * KnowledgeBase
+ * Select correct KnowledgeBase 
  * ToDo!!
  * 
  **********************************************************/
 
 bot.dialog('SupportDialogeCar',(session) => {
-  console.log(carCompany);
-  
-  
+ 
   if(carCompany){
-  session.replaceDialog("/"+ carCompany +"/manual");
+    session.replaceDialog("/"+ carCompany +"/manual");
   } else {
-  session.replaceDialog("Greeting");  
+    session.say("Ich weiß nicht in welchem Fahrzeug du dich befindest");
+    session.replaceDialog("Greeting");  
   }
+
+}).triggerAction({
+  matches: 'SupportDialogeCar'
+});
+
+/*********************************************************
+ * 
+ * Greeting/Introduction Indent
+ * ToDo!!
+ * 
+ **********************************************************/
+
+bot.dialog('Welcome',(session) => {
+ 
+    session.say("Hallo " + session.message)
 
 }).triggerAction({
   matches: 'SupportDialogeCar'
@@ -360,6 +387,13 @@ bot.dialog('Greeting',(session) => {
   matches: 'Greeting'
 });
 
+/*********************************************************
+ * 
+ * Smart Indent
+ * ToDo!!
+ * 
+ **********************************************************/
+
 bot.dialog('/Smart',(session) => {
   carCompany = "Smart";
 
@@ -429,6 +463,13 @@ bot.dialog('/Smart',(session) => {
 }).triggerAction({
   matches: '/Smart'
 });
+
+/*********************************************************
+ * 
+ * Mercedes Indent
+ * ToDo!!
+ * 
+ **********************************************************/
 
 bot.dialog('/Mercedes',(session) => {
   carCompany = "Mercedes";
@@ -537,6 +578,14 @@ bot.dialog('/Smart/Introduction',(session) => {
   matches: '/Smart/Introduction'
 });
 
+/*********************************************************
+ * 
+ * Smart Manual Indent
+ * ToDo!!
+ * 
+ **********************************************************/
+
+
 bot.dialog('/Smart/manual', //basicQnAMakerDialog);
     [
         function (session) {
@@ -558,6 +607,13 @@ bot.dialog('/Smart/manual', //basicQnAMakerDialog);
         }
 ]);
 
+/*********************************************************
+ * 
+ * Mercedes Manual Indent
+ * ToDo!!
+ * 
+ **********************************************************/
+
 bot.dialog('/Mercedes/manual', //basicQnAMakerDialog);
     [
         function (session) {
@@ -578,3 +634,36 @@ bot.dialog('/Mercedes/manual', //basicQnAMakerDialog);
             }
         }
 ]);
+
+/*********************************************************
+ * 
+ * Jokes Indent
+ * ToDo!!
+ * 
+ **********************************************************/
+
+bot.dialog('JokesDialog',
+    (session) => {
+        let questionAnswer = jokes.randomJokeQuestion();
+        session.send(questionAnswer.Frage.toString());
+        session.send(questionAnswer.Antwort.toString());
+        session.endDialog();
+    }
+).triggerAction({
+    matches: 'Jokes'
+});
+
+/*********************************************************
+ * 
+ * Smart Indent
+ * ToDo!!
+ * 
+ **********************************************************/
+ 
+ bot.dialog('SupportDialogeBot',(session) => {
+     session.say("Wir können Schere Stein Papier spielen");   
+     session.say("Ausserdem kann ich dir einen Witz erzählen");
+     session.say("Ich kann dir sagen, zu welcher Stadt ein bestimmtes Kennzeichen gehört");  
+     session.say("Oder ich kann dir Fragen zu deinem Fahrzeug beantworten");
+    }
+);
