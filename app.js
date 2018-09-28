@@ -373,3 +373,14 @@ bot.dialog('/Smart/Introduction',(session) => {
 }).triggerAction({
   matches: '/Smart/Introduction'
 });
+
+bot.dialog('JokesDialog',
+    (session) => {
+        let questionAnswer = jokes.randomJokeQuestion();
+        session.send(questionAnswer.Frage.toString());
+        session.send(questionAnswer.Antwort.toString());
+        session.endDialog();
+    }
+).triggerAction({
+    matches: 'Jokes'
+})
