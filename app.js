@@ -86,6 +86,7 @@ var basicQnAMakerDialog = new builder_cognitiveservices.QnAMakerDialog({
 bot.dialog('basicQnAMakerDialog', basicQnAMakerDialog);
 
 bot.dialog('/', [
+  
   function (session) {
     var qnaKnowledgebaseId = process.env.QnAKnowledgebaseId;
     var qnaAuthKey = process.env.QnAAuthKey || process.env.QnASubscriptionKey;
@@ -115,6 +116,7 @@ bot.dialog('request',(session) => {
 });
 
 bot.dialog('Greeting',(session) => {
+  
   var msg = new builder.Message(session)
     .addAttachment({
     contentType: "application/vnd.microsoft.card.adaptive",
@@ -171,7 +173,14 @@ bot.dialog('Greeting',(session) => {
                 {
                   "type": "Image",
                   "url": "https://images-na.ssl-images-amazon.com/images/I/61VaoHj7IbL._SX425_.jpg",
-                  "style": "default"
+                  "style": "default",
+                  "selectAction": {
+                    "type": "Action.Submit",
+                    "title": "OK",
+                    "data": {
+                      "Company": "Mercedes"
+                    }
+                  }
                 }
               ]
             },
@@ -179,56 +188,32 @@ bot.dialog('Greeting',(session) => {
         }
       ]
     }
-    
-    // Middleware for handling adaptive card submits
-  function adaptiveCardSubmitMiddleware() {
-    return {
-        botbuilder: (session, next) => {
-
-            console.log(session.message);
-            
-            // I want them to be able to do this, for now ask they press the button
-            if(session.message && session.message.text == 'submit'){
-                session.send("Please use the submit button above");
-                return;
-            }
-
-            if (session.message && session.message.value) {
-
-                var defaultErrorMessage = 'Please provide all required fields';
-                switch (session.message.value.type) {
-                    case 'createISTicket':
-                        // Search, validate parameters
-                        if (jiraUtils.validateISTicket(session.message.value)) {
-                            // proceed to booking ticket
-                            jiraUtils.createISTicket(session);
-                            session.replaceDialog('/mainDialogue');   
-                        } else {
-                            session.send(defaultErrorMessage);
-                        }
-                        break;
-                    case 'cancelTicket':
-                        session.send("OK, we won't create a ticket");
-                        session.replaceDialog('/mainDialogue');
-                        break;
-                    case 'attachFiles':
-                        session.beginDialog('/attachFiles', session);
-                        break;
-                    default:
-                        // A form data was received, invalid or incomplete since the previous validation did not pass
-                        session.send(defaultErrorMessage);
-                        return;
-                }
-            } else {
-                next();
-            }
-        }
-    };
-}
   });
-  session.send(msg);
-
-  session.endDialog();
+    
+  if (session.message && session.message.value) {
+    session.send(session.message.value.Company);
+    session.endDialog();
+    session.replaceDialog("/"+ session.message.value.Company);
+  } else {
+    session.send(msg);
+  }
+      
 }).triggerAction({
   matches: 'Greeting'
+});
+
+bot.dialog('/Smart',(session) => {
+  session.send('Du sitzt also in einem Smart');
+  session.endDialog();
+
+}).triggerAction({
+  matches: '/Smart'
+});
+
+bot.dialog('/Mercedes',(session) => {
+  session.send('Du sitzt also in einem Mercedes');
+  session.endDialog();
+
+}).triggerAction({
+  matches: '/Mercedes'
 });
