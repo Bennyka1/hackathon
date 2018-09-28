@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<!--
+#############################################################################################
+##
+##
+##
+##
+##
+##
+##
+##
+##
+##
+#############################################################################################
+  
+-->
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>.MGS Beifrahrer Bot</title>
+
+  <script src="/botchat.js"></script>
+  <link href="/botchat.css" rel="stylesheet" />
+
+  <script src="https://cdn.botframework.com/botframework-webchat/latest/CognitiveServices.js"></script>
+
+</head>
+
+<body background="">
+
+  <div id="ChatBot"></div>
+
+  <script>
+    function getUsername() {
+      var person = prompt("Bitte gib den Namen des Fahrers an", "");
+      if (person != null) {
+        userName = {id:person, name:person}
+      }
+      return {id: person, name:person}
+    }
+
+    function changeBotText() {
+      var input = document.getElementsByClassName("wc-shellinput")[0];
+      input.readOnly = false;
+    }
+
+    const params = BotChat.queryParams(location.search);
+    const subscriptionKeyVal = 'f40df65a42ad4e4ba9f49dfc10d73aae';
+    window.botchatDebug = params['debug'] && params['debug'] === 'true';
+
+    const speechOptions = {
+      speechRecognizer: new CognitiveServices.SpeechRecognizer({ subscriptionKey: subscriptionKeyVal, locale: "de-DE" }),
+      speechSynthesizer: new CognitiveServices.SpeechSynthesizer({
+        gender: CognitiveServices.SynthesisGender.Female,
+        subscriptionKey: subscriptionKeyVal,
+        voiceName: 'Microsoft Server Speech Text to Speech Voice (de-DE, HeddaRUS)'
+      })
+    };
+
+    BotChat.App({
+      bot: { id: 'Buddy-Bot', name: 'Buddy' },
+      resize: 'detect',
+      sendTyping: true,
+      speechOptions: speechOptions,
+      user: getUsername(),
+      locale: 'de-DE',
+      directLine: {
+        domain: params['domain'],
+        secret: 'pT_LDjPh4QY.cwA.Rxw.mWl6lhnWvcRNUSOt0qjlUbRG0lV_txIWi2pkB95XfpA',
+        token: params['t'],
+        webSocket: params['webSocket'] && params['webSocket'] === 'true'
+      }
+    }, document.getElementById('ChatBot'));
+
+    changeBotText();
+
+  </script>
+
+</body>
+
+</html>
