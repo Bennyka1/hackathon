@@ -6,6 +6,7 @@ var restify = require('restify');
 var builder = require('botbuilder');
 var botbuilder_azure = require("botbuilder-azure");
 var builder_cognitiveservices = require("botbuilder-cognitiveservices");
+var quiz = require("./Quiz");
 var msg;
 
 // Setup Restify Server
@@ -373,3 +374,12 @@ bot.dialog('/Smart/Introduction',(session) => {
 }).triggerAction({
   matches: '/Smart/Introduction'
 });
+
+bot.dialog('QuizGameDialog',
+    (session) => {
+        session.send(quiz.randomQuizQuestion());
+        session.endDialog();
+    }
+).triggerAction({
+    matches: 'QuizGame'
+})
