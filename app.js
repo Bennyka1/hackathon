@@ -7,6 +7,14 @@ var builder = require('botbuilder');
 var botbuilder_azure = require("botbuilder-azure");
 var builder_cognitiveservices = require("botbuilder-cognitiveservices");
 var msg;
+var carCompany;
+
+var symbolcomputer;
+var symbolspieler;
+var anzahlrunden = 0;
+var gewinnecomputer = 0;
+var gewinnespieler = 0;
+var gewinnbedingung = 3;
 
 // Setup Restify Server
 var server = restify.createServer();
@@ -57,8 +65,8 @@ bot.recognizer(recognizer);
 
 // Recognizer and and Dialog for preview QnAMaker service
 var previewRecognizer = new builder_cognitiveservices.QnAMakerRecognizer({
-  knowledgeBaseId: process.env.QnAKnowledgebaseId,
-  authKey: process.env.QnAAuthKey || process.env.QnASubscriptionKey
+  knowledgeBaseId: process.env.QnAKnowledgebaseId2,
+  authKey: process.env.QnAAuthKey2 || process.env.QnASubscriptionKey2
 });
 
 var basicQnAMakerPreviewDialog = new builder_cognitiveservices.QnAMakerDialog({
@@ -68,13 +76,26 @@ var basicQnAMakerPreviewDialog = new builder_cognitiveservices.QnAMakerDialog({
 }
   );
 
+var secondRecognizer = new builder_cognitiveservices.QnAMakerRecognizer({
+  knowledgeBaseId: process.env.QnAKnowledgebaseId,
+  authKey: process.env.QnAAuthKey || process.env.QnASubscriptionKey
+});
+
+var secondQnAMakerPreviewDialog = new builder_cognitiveservices.QnAMakerDialog({
+  recognizers: [secondRecognizer],
+  defaultMessage: 'No match! Try changing the query terms!',
+  qnaThreshold: 0.3
+}
+  );
+
 bot.dialog('basicQnAMakerPreviewDialog', basicQnAMakerPreviewDialog);
+bot.dialog('secondQnAMakerPreviewDialog', secondQnAMakerPreviewDialog);
 
 // Recognizer and and Dialog for GA QnAMaker service
 var recognizer = new builder_cognitiveservices.QnAMakerRecognizer({
-  knowledgeBaseId: process.env.QnAKnowledgebaseId,
-  authKey: process.env.QnAAuthKey || process.env.QnASubscriptionKey, // Backward compatibility with QnAMaker (Preview)
-  endpointHostName: process.env.QnAEndpointHostName
+  knowledgeBaseId: process.env.QnAKnowledgebaseId2,
+  authKey: process.env.QnAAuthKey2 || process.env.QnASubscriptionKey2, // Backward compatibility with QnAMaker (Preview)
+  endpointHostName: process.env.QnAEndpointHostName2
 });
 
 var basicQnAMakerDialog = new builder_cognitiveservices.QnAMakerDialog({
@@ -84,38 +105,168 @@ var basicQnAMakerDialog = new builder_cognitiveservices.QnAMakerDialog({
 }
   );
 
-bot.dialog('basicQnAMakerDialog', basicQnAMakerDialog);
-
-bot.dialog('/', [
-
-  function (session) {
-    var qnaKnowledgebaseId = process.env.QnAKnowledgebaseId;
-    var qnaAuthKey = process.env.QnAAuthKey || process.env.QnASubscriptionKey;
-    var endpointHostName = process.env.QnAEndpointHostName;
-
-    // QnA Subscription Key and KnowledgeBase Id null verification
-    if ((qnaAuthKey == null || qnaAuthKey == '') || (qnaKnowledgebaseId == null || qnaKnowledgebaseId == ''))
-      session.send('Please set QnAKnowledgebaseId, QnAAuthKey and QnAEndpointHostName (if applicable) in App Settings. Learn how to get them at https://aka.ms/qnaabssetup.');
-    else {
-      if (endpointHostName == null || endpointHostName == '')
-        // Replace with Preview QnAMakerDialog service
-        session.replaceDialog('basicQnAMakerPreviewDialog');
-      else
-        // Replace with GA QnAMakerDialog service
-        session.replaceDialog('basicQnAMakerDialog');
-    }
-  }
-]);
-    
-// Add a dialog for each intent that the LUIS app recognizes.
-// See https://docs.microsoft.com/en-us/bot-framework/nodejs/bot-builder-nodejs-recognize-intent-luis 
-bot.dialog('request',(session) => {
-  session.send('Dies ist dein Request Indent');
-  session.endDialog();
-}).triggerAction({
-  matches: 'request'
+var secondrecognizer = new builder_cognitiveservices.QnAMakerRecognizer({
+  knowledgeBaseId: process.env.QnAKnowledgebaseId,
+  authKey: process.env.QnAAuthKey || process.env.QnASubscriptionKey, // Backward compatibility with QnAMaker (Preview)
+  endpointHostName: process.env.QnAEndpointHostName
 });
 
+var secondQnAMakerDialog = new builder_cognitiveservices.QnAMakerDialog({
+  recognizers: [secondrecognizer],
+  defaultMessage: 'No match! Try changing the query terms!',
+  qnaThreshold: 0.3
+}
+  );
+
+bot.dialog('basicQnAMakerDialog', basicQnAMakerDialog);
+bot.dialog('secondQnAMakerDialog', secondQnAMakerDialog);
+
+/*********************************************************
+ * 
+ * Welcome Message
+ * 
+ * 
+ * 
+ **********************************************************/
+
+
+bot.on('conversationUpdate', function (message) {
+  if (message.membersAdded) {
+    message.membersAdded.forEach(function (identity) {
+      if (identity.id === message.address.bot.id) {
+        bot.send(new builder.Message()
+          .address(message.address)
+          .text("Hallo!"));
+      }
+    });
+  }
+});
+
+
+bot.dialog('/',(session) => {
+  console.log(carCompany);
+  
+  session.endDialog();
+  session.replaceDialog("Greeting");
+
+}).triggerAction({
+  matches: '/'
+});
+
+/*********************************************************
+ * 
+ * Schere Stein Papier [Entwurf]
+ * ToDo!!
+ * 
+ * 
+ **********************************************************/
+
+bot.dialog('SchereSteinPapier',(session) => {
+
+    var ausgedachtezahl = Math.random() * 3;
+    ausgedachtezahl = Math.round(ausgedachtezahl + 0, 5);
+
+    if (ausgedachtezahl == 1) {
+      symbolcomputer = "Schere"
+    };
+    if (ausgedachtezahl == 2) {
+      symbolcomputer = "Stein";
+    };
+    if (ausgedachtezahl == 3) {
+      symbolcomputer = "Papier";
+    };
+
+    session.send("Schere Stein oder Papier?");
+    
+  }).triggerAction({
+    matches: 'SchereSteinPapier'
+  });
+
+  bot.dialog('stein',(session) => {
+    symbolspieler = "Stein";
+    if (symbolcomputer == "Schere" && symbolspieler == "Stein") {
+      session.send("Du gewinnst gegen Schere");
+    }
+    if (symbolcomputer == "Papier" && symbolspieler == "Stein") {
+      session.send("Computer gewinnt mit Papier");
+      gewinnespieler++;
+    }
+
+    if (symbolspieler == symbolcomputer) {
+      session.send("Spiel unentschieden");
+    }
+    session.endDialog();
+
+
+  }).triggerAction({
+    matches: 'SchereSteinPapierAntwort'
+  });
+
+
+  bot.dialog('schere',(session) => {
+    symbolspieler = "Schere";
+    if (symbolcomputer == "Stein" && symbolspieler == "Schere") {
+      session.send("Computer gewinnt mit Stein");
+      gewinnespieler++;
+    }
+    if (symbolcomputer == "Papier" && symbolspieler == "Schere") {
+      session.send("Du gewinnst mit Papier");
+      gewinnespieler++;
+    }
+    if (symbolspieler == symbolcomputer) {
+      session.send("Spiel unentschieden");
+    }
+    session.endDialog();
+
+
+  }).triggerAction({
+    matches: 'SchereSteinPapierAntwort'
+  });
+
+  bot.dialog('papier',(session) => {
+    symbolspieler = "Papier";
+
+    if (symbolcomputer == "Schere" && symbolspieler == "Papier") {
+      session.send("Computer gewinnt mit Schere");
+      gewinnespieler++;
+    }
+
+    if (symbolcomputer == "Stein" && symbolspieler == "Papier") {
+      session.send("Du gewinnst gegen Stein");
+      gewinnespieler++;
+    }
+
+    if (symbolspieler == symbolcomputer) {
+      session.send("Spiel unentschieden");
+    }
+    session.endDialog();
+
+  }).triggerAction({
+    matches: 'SchereSteinPapierAntwort'
+  });
+
+
+/*********************************************************
+ * 
+ * KnowledgeBase
+ * ToDo!!
+ * 
+ **********************************************************/
+
+bot.dialog('SupportDialogeCar',(session) => {
+  console.log(carCompany);
+  
+  
+  if(carCompany){
+  session.replaceDialog("/"+ carCompany +"/manual");
+  } else {
+  session.replaceDialog("Greeting");  
+  }
+
+}).triggerAction({
+  matches: 'SupportDialogeCar'
+});
+    
 bot.dialog('Greeting',(session) => {
   msg = new builder.Message(session)
     .addAttachment({
@@ -123,7 +274,7 @@ bot.dialog('Greeting',(session) => {
     content: {
       "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
       "type": "AdaptiveCard",
-      "speak": "Hallo " + session.message.user.name + ", mit welchem Fahrzeug fährst du heute? Tippe bitte auf den Bildschrim um ein Modell auszuwählen.",
+      "speak": "Hallo " + session.message.user.name + ", mit welchem Fahrzeug fährst du heute?",
       "version": "1.0",
       "body": [
         {
@@ -210,6 +361,7 @@ bot.dialog('Greeting',(session) => {
 });
 
 bot.dialog('/Smart',(session) => {
+  carCompany = "Smart";
 
   msg = new builder.Message(session)
     .addAttachment({
@@ -279,6 +431,7 @@ bot.dialog('/Smart',(session) => {
 });
 
 bot.dialog('/Mercedes',(session) => {
+  carCompany = "Mercedes";
 
   msg = new builder.Message(session)
     .addAttachment({
@@ -327,7 +480,11 @@ bot.dialog('/Mercedes',(session) => {
 
       if (session.message.value.Introduction == "Ja") {
         session.endDialog(session.message.value.Company);
-        session.replaceDialog("/Smart/Introduction");
+        session.replaceDialog("/Mercedes/Introduction");
+      }
+
+      if (session.message.value.Introduction == "Nein") {
+        session.endDialog("Gute Fahrt!");
       }
 
     } else {
@@ -335,12 +492,18 @@ bot.dialog('/Mercedes',(session) => {
     }
 
   } else {
+
     if (session.message.text == "Ja") {
-      session.endDialog();
       session.replaceDialog("/Mercedes/Introduction");
-    } else {
-      session.send(msg);
+      session.endDialog();
     }
+
+    if (session.message.text == "Nein") {
+      session.endDialog("Gute Fahrt! :-)");
+    }
+
+    session.send(msg);
+
   }
 
 }).triggerAction({
@@ -373,3 +536,45 @@ bot.dialog('/Smart/Introduction',(session) => {
 }).triggerAction({
   matches: '/Smart/Introduction'
 });
+
+bot.dialog('/Smart/manual', //basicQnAMakerDialog);
+    [
+        function (session) {
+            var qnaKnowledgebaseId = process.env.QnAKnowledgebaseId2;
+            var qnaAuthKey = process.env.QnAAuthKey2 || process.env.QnASubscriptionKey2;
+            var endpointHostName = process.env.QnAEndpointHostName2;
+
+            // QnA Subscription Key and KnowledgeBase Id null verification
+            if ((qnaAuthKey == null || qnaAuthKey == '') || (qnaKnowledgebaseId == null || qnaKnowledgebaseId == ''))
+                session.send('Please set QnAKnowledgebaseId, QnAAuthKey and QnAEndpointHostName (if applicable) in App Settings. Learn how to get them at https://aka.ms/qnaabssetup.');
+            else {
+                if (endpointHostName == null || endpointHostName == '')
+                    // Replace with Preview QnAMakerDialog service
+                    session.replaceDialog('basicQnAMakerPreviewDialog');
+                else
+                    // Replace with GA QnAMakerDialog service
+                    session.replaceDialog('basicQnAMakerDialog');
+            }
+        }
+]);
+
+bot.dialog('/Mercedes/manual', //basicQnAMakerDialog);
+    [
+        function (session) {
+            var qnaKnowledgebaseId = process.env.QnAKnowledgebaseId;
+            var qnaAuthKey = process.env.QnAAuthKey || process.env.QnASubscriptionKey;
+            var endpointHostName = process.env.QnAEndpointHostName;
+
+            // QnA Subscription Key and KnowledgeBase Id null verification
+            if ((qnaAuthKey == null || qnaAuthKey == '') || (qnaKnowledgebaseId == null || qnaKnowledgebaseId == ''))
+                session.send('Please set QnAKnowledgebaseId, QnAAuthKey and QnAEndpointHostName (if applicable) in App Settings. Learn how to get them at https://aka.ms/qnaabssetup.');
+            else {
+                if (endpointHostName == null || endpointHostName == '')
+                    // Replace with Preview QnAMakerDialog service
+                    session.replaceDialog('secondQnAMakerPreviewDialog');
+                else
+                    // Replace with GA QnAMakerDialog service
+                    session.replaceDialog('secondQnAMakerDialog');
+            }
+        }
+]);
