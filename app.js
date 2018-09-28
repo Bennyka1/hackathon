@@ -6,6 +6,7 @@ var restify = require('restify');
 var builder = require('botbuilder');
 var botbuilder_azure = require("botbuilder-azure");
 var builder_cognitiveservices = require("botbuilder-cognitiveservices");
+const jokes = require("./Jokes");
 var msg;
 
 // Setup Restify Server
@@ -383,4 +384,4 @@ bot.dialog('JokesDialog',
     }
 ).triggerAction({
     matches: 'Jokes'
-})
+});
