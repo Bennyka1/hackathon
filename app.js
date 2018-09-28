@@ -89,9 +89,23 @@ var secondQnAMakerPreviewDialog = new builder_cognitiveservices.QnAMakerDialog({
   qnaThreshold: 0.3
 }
   );
+  
+// Recognizer and and Dialog for preview QnAMaker service
+var thirdRecognizer = new builder_cognitiveservices.QnAMakerRecognizer({
+    knowledgeBaseId: process.env.QnAKnowledgebaseId3,
+    authKey: process.env.QnAAuthKey3 || process.env.QnASubscriptionKey3
+});
+
+var basicQnAMakerthirdDialog = new builder_cognitiveservices.QnAMakerDialog({
+    recognizers: [thirdRecognizer],
+    defaultMessage: 'No match! Try changing the query terms!',
+    qnaThreshold: 0.3
+}
+);
 
 bot.dialog('basicQnAMakerPreviewDialog', basicQnAMakerPreviewDialog);
 bot.dialog('secondQnAMakerPreviewDialog', secondQnAMakerPreviewDialog);
+bot.dialog('basicQnAMakerthirdDialog', basicQnAMakerthirdDialog);
 
 // Recognizer and and Dialog for GA QnAMaker service
 var recognizer = new builder_cognitiveservices.QnAMakerRecognizer({
@@ -119,9 +133,23 @@ var secondQnAMakerDialog = new builder_cognitiveservices.QnAMakerDialog({
   qnaThreshold: 0.3
 }
   );
+  
+  // Recognizer and and Dialog for GA QnAMaker service
+var thirdrecognizer = new builder_cognitiveservices.QnAMakerRecognizer({
+    knowledgeBaseId: process.env.QnAKnowledgebaseId3,
+    authKey: process.env.QnAAuthKey3 || process.env.QnASubscriptionKey3, // Backward compatibility with QnAMaker (Preview)
+    endpointHostName: process.env.QnAEndpointHostName3
+});
+
+var thirdQnAMarkerDialog = new builder_cognitiveservices.QnAMakerDialog({
+    recognizers: [thirdrecognizer],
+    defaultMessage: 'No match! Try changing the query terms!',
+    qnaThreshold: 0.3
+});
 
 bot.dialog('basicQnAMakerDialog', basicQnAMakerDialog);
 bot.dialog('secondQnAMakerDialog', secondQnAMakerDialog);
+bot.dialog('thirdQnAMarkerDialog', thirdQnAMarkerDialog);
 
 /*********************************************************
  * 
@@ -152,8 +180,6 @@ bot.on('conversationUpdate', function (message) {
  **********************************************************/
 
 bot.dialog('/',(session) => {
-  console.log(carCompany);
-  
   session.endDialog();
   session.replaceDialog("Greeting");
 
@@ -169,95 +195,96 @@ bot.dialog('/',(session) => {
  * 
  **********************************************************/
 
- function randomzahl(){
-    
-    ausgedachtezahl = Math.random() * 3;
-    ausgedachtezahl = Math.round(ausgedachtezahl + 0.5);
+function randomzahl() {
 
-    if (ausgedachtezahl == 1) {
-      symbolcomputer = "Schere"
-    };
-    if (ausgedachtezahl == 2) {
-      symbolcomputer = "Stein";
-    };
-    if (ausgedachtezahl == 3) {
-      symbolcomputer = "Papier";
-    };
-    
+  ausgedachtezahl = Math.random() * 3;
+  ausgedachtezahl = Math.round(ausgedachtezahl + 0.5);
+
+  if (ausgedachtezahl == 1) {
+    symbolcomputer = "Schere"
+  };
+  if (ausgedachtezahl == 2) {
+    symbolcomputer = "Stein";
+  };
+  if (ausgedachtezahl == 3) {
+    symbolcomputer = "Papier";
+  };
+
+}
+
+bot.dialog('SchereSteinPapier',(session) => {
+
+  randomzahl();
+
+  session.send("Schere Stein oder Papier? ");
+
+
+}).triggerAction({
+  matches: 'SchereSteinPapier'
+});
+
+bot.dialog('SchereSteinPapierAntwort',(session) => {
+
+  randomzahl();
+
+  if (session.message.text == "Schere") {
+    symbolspieler = "Schere";
+  }
+  if (session.message.text == "Stein") {
+    symbolspieler = "Stein";
+  }
+  if (session.message.text == "Papier") {
+    symbolspieler = "Papier";
   }
 
-  bot.dialog('SchereSteinPapier',(session) => {
-
-    randomzahl();
-
-    session.send("Schere Stein oder Papier? ");
-    
-
-  }).triggerAction({
-    matches: 'SchereSteinPapier'
-  });
-
-  bot.dialog('SchereSteinPapierAntwort',(session) => {
-    
-    randomzahl();
-    
-    if (session.message.text == "Schere" ){
-      symbolspieler = "Schere";
-    }
-    if (session.message.text == "Stein" ){
-      symbolspieler = "Stein";
-    }
-    if (session.message.text == "Papier" ){
-      symbolspieler = "Papier";
-    }
-    
-    if (session.message.text == "MSG"){
-      session.send("DIE MSG GEWINNT IMMER!");
-      symbolspieler = "";
-    }
-    
-    
-    if (symbolcomputer == "Schere" && symbolspieler == "Stein") {
-      session.send("Du gewinnst gegen Schere");
-      gewinnespieler++;
-    }
-    if (symbolcomputer == "Papier" && symbolspieler == "Stein") {
-      session.send("Computer gewinnt mit Papier");
-      gewinnecomputer++;
-     
-    }
-    
-    if (symbolcomputer == "Stein" && symbolspieler == "Schere") {
-      session.send("Computer gewinnt mit Stein");
-      gewinnecomputer++;
-      
-    }
-    if (symbolcomputer == "Papier" && symbolspieler == "Schere") {
-      session.send("Du gewinnst gegen Papier");
-      gewinnespieler++;
-    }
-
-    if (symbolspieler == symbolcomputer) {
-      session.send("Spiel unentschieden");
-    }  
-    
-    if (symbolcomputer == "Schere" && symbolspieler == "Papier") {
-      session.send("Computer gewinnt mit Schere");
-      gewinnecomputer++;
-    }
-
-    if (symbolcomputer == "Stein" && symbolspieler == "Papier") {
-      session.send("Du gewinnst gegen Stein");
-      gewinnespieler++;
-    }
-    
-    session.endDialog();
+  if (session.message.text == "MSG") {
+    session.send("DIE MSG GEWINNT IMMER!");
+    symbolspieler = "";
+  }
 
 
-  }).triggerAction({
-    matches: 'SchereSteinPapierAntwort'
-  });
+  if (symbolcomputer == "Schere" && symbolspieler == "Stein") {
+    session.send("Ich nehme: Schere. \nDu gewinnst gegen Schere");
+    gewinnespieler++;
+  }
+  if (symbolcomputer == "Papier" && symbolspieler == "Stein") {
+    session.send("Ich nehme: Papier. \nComputer gewinnt mit Papier");
+    gewinnecomputer++;
 
+  }
+
+  if (symbolcomputer == "Stein" && symbolspieler == "Schere") {
+    session.send("Ich nehme: Stein. \nComputer gewinnt mit Stein");
+    gewinnecomputer++;
+
+  }
+  if (symbolcomputer == "Papier" && symbolspieler == "Schere") {
+    session.send("Ich nehme: Papier. \nDu gewinnst gegen Papier");
+    gewinnespieler++;
+  }
+
+  if (symbolspieler == symbolcomputer) {
+    session.send("Ich nehme: " + symbolcomputer + ". \nSpiel unentschieden");
+  }
+
+  if (symbolcomputer == "Schere" && symbolspieler == "Papier") {
+    session.send("Ich nehme: Schere. \nComputer gewinnt mit Schere");
+    gewinnecomputer++;
+  }
+
+  if (symbolcomputer == "Stein" && symbolspieler == "Papier") {
+    session.send("Ich nehme: Stein. \nDu gewinnst gegen Stein");
+    gewinnespieler++;
+  }
+
+  session.endDialog();
+
+
+}).triggerAction({
+  matches: 'SchereSteinPapierAntwort'
+});
+
+  
 
 /*********************************************************
  * 
@@ -267,12 +294,12 @@ bot.dialog('/',(session) => {
  **********************************************************/
 
 bot.dialog('SupportDialogeCar',(session) => {
- 
-  if(carCompany){
-    session.replaceDialog("/"+ carCompany +"/manual");
+
+  if (carCompany) {
+    session.replaceDialog("/" + carCompany + "/manual");
   } else {
     session.say("Ich weiß nicht in welchem Fahrzeug du dich befindest");
-    session.replaceDialog("Greeting");  
+    session.replaceDialog("Greeting");
   }
 
 }).triggerAction({
@@ -287,13 +314,16 @@ bot.dialog('SupportDialogeCar',(session) => {
  **********************************************************/
 
 bot.dialog('Welcome',(session) => {
- 
-    session.say("Hallo " + session.message)
 
+  //session.say('miezekatze miezekatze miezekatze miezekatze');
+  session.say("Hallo " + session.message.user.name);
+  session.replaceDialog("Greeting")
+  session.endDialog();
+   
 }).triggerAction({
-  matches: 'SupportDialogeCar'
+  matches: 'Welcome'
 });
-    
+
 bot.dialog('Greeting',(session) => {
   msg = new builder.Message(session)
     .addAttachment({
@@ -301,7 +331,7 @@ bot.dialog('Greeting',(session) => {
     content: {
       "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
       "type": "AdaptiveCard",
-      "speak": "Hallo " + session.message.user.name + ", mit welchem Fahrzeug fährst du heute?",
+      "speak": "Mit welchem Fahrzeug fährst du heute?",
       "version": "1.0",
       "body": [
         {
@@ -587,25 +617,25 @@ bot.dialog('/Smart/Introduction',(session) => {
 
 
 bot.dialog('/Smart/manual', //basicQnAMakerDialog);
-    [
-        function (session) {
-            var qnaKnowledgebaseId = process.env.QnAKnowledgebaseId2;
-            var qnaAuthKey = process.env.QnAAuthKey2 || process.env.QnASubscriptionKey2;
-            var endpointHostName = process.env.QnAEndpointHostName2;
+  [
+    function (session) {
+      var qnaKnowledgebaseId = process.env.QnAKnowledgebaseId2;
+      var qnaAuthKey = process.env.QnAAuthKey2 || process.env.QnASubscriptionKey2;
+      var endpointHostName = process.env.QnAEndpointHostName2;
 
-            // QnA Subscription Key and KnowledgeBase Id null verification
-            if ((qnaAuthKey == null || qnaAuthKey == '') || (qnaKnowledgebaseId == null || qnaKnowledgebaseId == ''))
-                session.send('Please set QnAKnowledgebaseId, QnAAuthKey and QnAEndpointHostName (if applicable) in App Settings. Learn how to get them at https://aka.ms/qnaabssetup.');
-            else {
-                if (endpointHostName == null || endpointHostName == '')
-                    // Replace with Preview QnAMakerDialog service
-                    session.replaceDialog('basicQnAMakerPreviewDialog');
-                else
-                    // Replace with GA QnAMakerDialog service
-                    session.replaceDialog('basicQnAMakerDialog');
-            }
-        }
-]);
+      // QnA Subscription Key and KnowledgeBase Id null verification
+      if ((qnaAuthKey == null || qnaAuthKey == '') || (qnaKnowledgebaseId == null || qnaKnowledgebaseId == ''))
+        session.send('Please set QnAKnowledgebaseId, QnAAuthKey and QnAEndpointHostName (if applicable) in App Settings. Learn how to get them at https://aka.ms/qnaabssetup.');
+      else {
+        if (endpointHostName == null || endpointHostName == '')
+          // Replace with Preview QnAMakerDialog service
+          session.replaceDialog('basicQnAMakerPreviewDialog');
+        else
+          // Replace with GA QnAMakerDialog service
+          session.replaceDialog('basicQnAMakerDialog');
+      }
+    }
+  ]);
 
 /*********************************************************
  * 
@@ -615,25 +645,25 @@ bot.dialog('/Smart/manual', //basicQnAMakerDialog);
  **********************************************************/
 
 bot.dialog('/Mercedes/manual', //basicQnAMakerDialog);
-    [
-        function (session) {
-            var qnaKnowledgebaseId = process.env.QnAKnowledgebaseId;
-            var qnaAuthKey = process.env.QnAAuthKey || process.env.QnASubscriptionKey;
-            var endpointHostName = process.env.QnAEndpointHostName;
+  [
+    function (session) {
+      var qnaKnowledgebaseId = process.env.QnAKnowledgebaseId;
+      var qnaAuthKey = process.env.QnAAuthKey || process.env.QnASubscriptionKey;
+      var endpointHostName = process.env.QnAEndpointHostName;
 
-            // QnA Subscription Key and KnowledgeBase Id null verification
-            if ((qnaAuthKey == null || qnaAuthKey == '') || (qnaKnowledgebaseId == null || qnaKnowledgebaseId == ''))
-                session.send('Please set QnAKnowledgebaseId, QnAAuthKey and QnAEndpointHostName (if applicable) in App Settings. Learn how to get them at https://aka.ms/qnaabssetup.');
-            else {
-                if (endpointHostName == null || endpointHostName == '')
-                    // Replace with Preview QnAMakerDialog service
-                    session.replaceDialog('secondQnAMakerPreviewDialog');
-                else
-                    // Replace with GA QnAMakerDialog service
-                    session.replaceDialog('secondQnAMakerDialog');
-            }
-        }
-]);
+      // QnA Subscription Key and KnowledgeBase Id null verification
+      if ((qnaAuthKey == null || qnaAuthKey == '') || (qnaKnowledgebaseId == null || qnaKnowledgebaseId == ''))
+        session.send('Please set QnAKnowledgebaseId, QnAAuthKey and QnAEndpointHostName (if applicable) in App Settings. Learn how to get them at https://aka.ms/qnaabssetup.');
+      else {
+        if (endpointHostName == null || endpointHostName == '')
+          // Replace with Preview QnAMakerDialog service
+          session.replaceDialog('secondQnAMakerPreviewDialog');
+        else
+          // Replace with GA QnAMakerDialog service
+          session.replaceDialog('secondQnAMakerDialog');
+      }
+    }
+  ]);
 
 /*********************************************************
  * 
@@ -643,14 +673,14 @@ bot.dialog('/Mercedes/manual', //basicQnAMakerDialog);
  **********************************************************/
 
 bot.dialog('JokesDialog',
-    (session) => {
-        let questionAnswer = jokes.randomJokeQuestion();
-        session.send(questionAnswer.Frage.toString());
-        session.send(questionAnswer.Antwort.toString());
-        session.endDialog();
-    }
-).triggerAction({
-    matches: 'Jokes'
+  (session) => {
+    let questionAnswer = jokes.randomJokeQuestion();
+    session.send(questionAnswer.Frage.toString());
+    session.send(questionAnswer.Antwort.toString());
+    session.endDialog();
+  }
+  ).triggerAction({
+  matches: 'Jokes'
 });
 
 /*********************************************************
@@ -659,11 +689,43 @@ bot.dialog('JokesDialog',
  * ToDo!!
  * 
  **********************************************************/
- 
- bot.dialog('SupportDialogeBot',(session) => {
-     session.say("Wir können Schere Stein Papier spielen");   
-     session.say("Ausserdem kann ich dir einen Witz erzählen");
-     session.say("Ich kann dir sagen, zu welcher Stadt ein bestimmtes Kennzeichen gehört");  
-     session.say("Oder ich kann dir Fragen zu deinem Fahrzeug beantworten");
-    }
-);
+
+bot.dialog('SupportDialogeBot',(session) => {
+  session.say("Wir können Schere Stein Papier spielen");
+  session.say("Ausserdem kann ich dir einen Witz erzählen");
+  session.say("Ich kann dir sagen, zu welcher Stadt ein bestimmtes Kennzeichen gehört");
+  session.say("Oder ich kann dir Fragen zu deinem Fahrzeug beantworten");
+}
+  ).triggerAction({
+  matches: 'SupportDialogeBot'
+});
+
+/*********************************************************
+ * 
+ * Kennzeichen Indent
+ * ToDo!!
+ * 
+ **********************************************************/
+  
+ bot.dialog('LicencePlates', //Kennzeichen);
+    [
+        function (session) {
+            var qnaKnowledgebaseId = process.env.QnAKnowledgebaseId3;
+            var qnaAuthKey = process.env.QnAAuthKey3 || process.env.QnASubscriptionKey3;
+            var endpointHostName = process.env.QnAEndpointHostName3;
+
+            // QnA Subscription Key and KnowledgeBase Id null verification
+            if ((qnaAuthKey == null || qnaAuthKey == '') || (qnaKnowledgebaseId == null || qnaKnowledgebaseId == ''))
+                session.send('Please set QnAKnowledgebaseId, QnAAuthKey and QnAEndpointHostName (if applicable) in App Settings. Learn how to get them at https://aka.ms/qnaabssetup.');
+            else {
+                if (endpointHostName == null || endpointHostName == '')
+                    // Replace with Preview QnAMakerDialog service
+                    session.replaceDialog('basicQnAMakerthirdDialog');
+                else
+                    // Replace with GA QnAMakerDialog service
+                    session.replaceDialog('thirdQnAMarkerDialog');
+            }
+        }
+    ]);
+    
+   
