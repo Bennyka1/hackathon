@@ -903,4 +903,7 @@ body .wc-app, .wc-app button, .wc-app input, .wc-app textarea {
     ::placeholder{
         font-size: 0.75rem;
     }
+    .wc-adaptive-card{
+        width:280px;
+    }
 }
