@@ -6,6 +6,7 @@ var restify = require('restify');
 var builder = require('botbuilder');
 var botbuilder_azure = require("botbuilder-azure");
 var builder_cognitiveservices = require("botbuilder-cognitiveservices");
+var msg;
 
 // Setup Restify Server
 var server = restify.createServer();
@@ -86,7 +87,7 @@ var basicQnAMakerDialog = new builder_cognitiveservices.QnAMakerDialog({
 bot.dialog('basicQnAMakerDialog', basicQnAMakerDialog);
 
 bot.dialog('/', [
-  
+
   function (session) {
     var qnaKnowledgebaseId = process.env.QnAKnowledgebaseId;
     var qnaAuthKey = process.env.QnAAuthKey || process.env.QnASubscriptionKey;
@@ -116,14 +117,13 @@ bot.dialog('request',(session) => {
 });
 
 bot.dialog('Greeting',(session) => {
-  
-  var msg = new builder.Message(session)
+  msg = new builder.Message(session)
     .addAttachment({
     contentType: "application/vnd.microsoft.card.adaptive",
     content: {
       "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
       "type": "AdaptiveCard",
-      "message": "Hallo " + session.message.name + ", in welchem Auto sitzt du heute?",
+      "speak": "Hallo " + session.message.user.name + ", mit welchem Fahrzeug fährst du heute? Tippe bitte auf den Bildschrim um ein Modell auszuwählen.",
       "version": "1.0",
       "body": [
         {
@@ -189,22 +189,90 @@ bot.dialog('Greeting',(session) => {
       ]
     }
   });
-    
+
   if (session.message && session.message.value) {
-    session.send(session.message.value.Company);
-    session.endDialog();
-    session.replaceDialog("/"+ session.message.value.Company);
+
+    session.endDialog(session.message.value.Company);
+    session.replaceDialog("/" + session.message.value.Company);
+
   } else {
-    session.send(msg);
+
+    if (session.message.text == "Smart") {
+      session.endDialog();
+      session.replaceDialog("/Smart");
+    } else {
+      session.send(msg);
+    }
   }
-      
+
 }).triggerAction({
   matches: 'Greeting'
 });
 
 bot.dialog('/Smart',(session) => {
-  session.send('Du sitzt also in einem Smart');
-  session.endDialog();
+
+  msg = new builder.Message(session)
+    .addAttachment({
+    contentType: "application/vnd.microsoft.card.adaptive",
+    content: {
+      "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+      "type": "AdaptiveCard",
+      "version": "1.0",
+      "speak": "Möchtest du eine kurze Einführung haben?",
+      "body": [
+        {
+          "type": "TextBlock",
+          "text": "Einführung in Fahrzeug",
+          "size": "large",
+          "weight": "bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "Soll ich dir eine kurze Einführung zeigen?",
+        },
+      ],
+      "actions": [
+        {
+          "type": "Action.Submit",
+          "title": "Ja",
+          "data": {
+            "Introduction": "Ja"
+          }
+        },
+        {
+          "type": "Action.Submit",
+          "title": "Nein",
+          "data": {
+            "Introduction": "Nein"
+          }
+        }
+      ]
+    }
+  });
+
+  if (session.message && session.message.value) {
+
+    if (session.message.value.Introduction) {
+      //session.send(session.message.value.Introduction);
+      session.endDialog(session.message.value.Introduction);
+
+      if (session.message.value.Introduction == "Ja") {
+        session.endDialog(session.message.value.Company);
+        session.replaceDialog("/Smart/Introduction");
+      }
+
+    } else {
+      session.send(msg);
+    }
+
+  } else {
+    if (session.message.text == "Ja") {
+      session.endDialog();
+      session.replaceDialog("/Smart/Introduction");
+    } else {
+      session.send(msg);
+    }
+  }
 
 }).triggerAction({
   matches: '/Smart'
@@ -216,4 +284,12 @@ bot.dialog('/Mercedes',(session) => {
 
 }).triggerAction({
   matches: '/Mercedes'
+});
+
+bot.dialog('/Smart/Introduction',(session) => {
+  session.say('Wenn du den Hebel unter deinem Sitz anhebst kannst du den Sitz vor oder zurückschieben. Die Sitzhöhe kann mit dem Hebel unten links verstellt werden. Mit dem Handrad kann dann die Sitzlehne eingestellt werden. Mit dem Hebel unter dem Lenkrad kann man das Lenkrad einstellen. Mit den Knöpfen, vorne in der Fahrertür lassen sich die Außenspiegel einstellen. Das Warndreieck ist mit einem Klettverschluss hinter der Lehne am Fahrersitz befestigt.');
+  session.endDialog();
+
+}).triggerAction({
+  matches: '/Smart/Introduction'
 });
