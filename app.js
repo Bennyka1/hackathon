@@ -279,15 +279,95 @@ bot.dialog('/Smart',(session) => {
 });
 
 bot.dialog('/Mercedes',(session) => {
-  session.send('Du sitzt also in einem Mercedes');
-  session.endDialog();
+
+  msg = new builder.Message(session)
+    .addAttachment({
+    contentType: "application/vnd.microsoft.card.adaptive",
+    content: {
+      "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+      "type": "AdaptiveCard",
+      "version": "1.0",
+      "speak": "Möchtest du eine kurze Einführung haben?",
+      "body": [
+        {
+          "type": "TextBlock",
+          "text": "Einführung in Fahrzeug",
+          "size": "large",
+          "weight": "bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "Soll ich dir eine kurze Einführung zeigen?",
+        },
+      ],
+      "actions": [
+        {
+          "type": "Action.Submit",
+          "title": "Ja",
+          "data": {
+            "Introduction": "Ja"
+          }
+        },
+        {
+          "type": "Action.Submit",
+          "title": "Nein",
+          "data": {
+            "Introduction": "Nein"
+          }
+        }
+      ]
+    }
+  });
+
+  if (session.message && session.message.value) {
+
+    if (session.message.value.Introduction) {
+      //session.send(session.message.value.Introduction);
+      session.endDialog(session.message.value.Introduction);
+
+      if (session.message.value.Introduction == "Ja") {
+        session.endDialog(session.message.value.Company);
+        session.replaceDialog("/Smart/Introduction");
+      }
+
+    } else {
+      session.send(msg);
+    }
+
+  } else {
+    if (session.message.text == "Ja") {
+      session.endDialog();
+      session.replaceDialog("/Mercedes/Introduction");
+    } else {
+      session.send(msg);
+    }
+  }
 
 }).triggerAction({
   matches: '/Mercedes'
 });
 
+bot.dialog('/Mercedes/Introduction',(session) => {
+  session.say('Bei der elektronischen Sitzeinstellung , kannst du über die Sitzknöpfe in der Türtafel die Sitzposition einstellen');
+  session.say('Bei der mechanischen Sitzeinstellung, kannst du den Sitz über die vorhandenen Hebel einstellen');
+  session.say('Bei der elektronischen Lenkradverstellung, kannst du mit dem mittleren Hebel, Einstellungen vornehmen');
+  session.say('Bei der mechanischen Lenkradeinstellung, befindet sich unter dem Lenkrad, in der nähe deiner Kniee ein Hebel über den sich das Lenkrad einstellen lässt');
+  session.say('Die Verstellung der Außenspiegel befindet sich auf der Armlehne in der Türtafel oben');
+  session.say('Das Warndreieck befindet sich im Kofferraum unter dem Laderaumboden');
+  session.say('Zum Lösen des Warndreiecks musst du die Laschen der Aufnahme nach hinten drücken');
+  session.endDialog();
+
+}).triggerAction({
+  matches: '/Mercedes/Introduction'
+});
+
 bot.dialog('/Smart/Introduction',(session) => {
-  session.say('Wenn du den Hebel unter deinem Sitz anhebst kannst du den Sitz vor oder zurückschieben. Die Sitzhöhe kann mit dem Hebel unten links verstellt werden. Mit dem Handrad kann dann die Sitzlehne eingestellt werden. Mit dem Hebel unter dem Lenkrad kann man das Lenkrad einstellen. Mit den Knöpfen, vorne in der Fahrertür lassen sich die Außenspiegel einstellen. Das Warndreieck ist mit einem Klettverschluss hinter der Lehne am Fahrersitz befestigt.');
+  session.say('Wenn du den Hebel unter deinem Sitz anhebst kannst du den Sitz vor oder zurückschieben');
+  session.say('Die Sitzhöhe kann mit dem Hebel unten links verstellt werden');
+  session.say('Mit dem Handrad kann dann die Sitzlehne eingestellt werden');
+  session.say('Mit dem Hebel unter dem Lenkrad kann man das Lenkrad einstellen');
+  session.say('Mit den Knöpfen, vorne in der Fahrertür lassen sich die Außenspiegel einstellen');
+  session.say('Das Warndreieck ist mit einem Klettverschluss hinter der Lehne am Fahrersitz befestigt');
   session.endDialog();
 
 }).triggerAction({
