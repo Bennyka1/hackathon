@@ -459,7 +459,7 @@ bot.dialog('/Smart',(session) => {
           "type": "Action.Submit",
           "title": "Nein",
           "data": {
-            "Introduction": "Nein"
+            "Introduction": "Nein."
           }
         }
       ]
@@ -727,5 +727,17 @@ bot.dialog('SupportDialogeBot',(session) => {
             }
         }
     ]);
-    
+
+ * 
+ * Ich sehe was, was du nicht siehst 
+ * 
+ **********************************************************/
+bot.dialog('IchSeheWas',(session) => {
+  session.say("Okay, ich beginne. Ich sehe was, was du nicht siehst und das ist...");
+  session.say("Oh, schon weg!");
+}
+  ).triggerAction({
+  matches: 'IchSeheWas'
+});
+
    
