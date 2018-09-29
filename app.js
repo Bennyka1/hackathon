@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------------------
-A simple echo bot for the Microsoft Bot Framework. 
+The MSG Buddy Bot.
 -----------------------------------------------------------------------------*/
 
 var restify = require('restify');
@@ -17,6 +17,8 @@ var anzahlrunden = 0;
 var gewinnecomputer = 0;
 var gewinnespieler = 0;
 var gewinnbedingung = 3;
+
+var fahrzeugwahl = 0;
 
 // Setup Restify Server
 var server = restify.createServer();
@@ -92,16 +94,16 @@ var secondQnAMakerPreviewDialog = new builder_cognitiveservices.QnAMakerDialog({
   
 // Recognizer and and Dialog for preview QnAMaker service
 var thirdRecognizer = new builder_cognitiveservices.QnAMakerRecognizer({
-    knowledgeBaseId: process.env.QnAKnowledgebaseId3,
-    authKey: process.env.QnAAuthKey3 || process.env.QnASubscriptionKey3
+  knowledgeBaseId: process.env.QnAKnowledgebaseId3,
+  authKey: process.env.QnAAuthKey3 || process.env.QnASubscriptionKey3
 });
 
 var basicQnAMakerthirdDialog = new builder_cognitiveservices.QnAMakerDialog({
-    recognizers: [thirdRecognizer],
-    defaultMessage: 'No match! Try changing the query terms!',
-    qnaThreshold: 0.3
+  recognizers: [thirdRecognizer],
+  defaultMessage: 'No match! Try changing the query terms!',
+  qnaThreshold: 0.3
 }
-);
+  );
 
 bot.dialog('basicQnAMakerPreviewDialog', basicQnAMakerPreviewDialog);
 bot.dialog('secondQnAMakerPreviewDialog', secondQnAMakerPreviewDialog);
@@ -134,17 +136,17 @@ var secondQnAMakerDialog = new builder_cognitiveservices.QnAMakerDialog({
 }
   );
   
-  // Recognizer and and Dialog for GA QnAMaker service
+// Recognizer and and Dialog for GA QnAMaker service
 var thirdrecognizer = new builder_cognitiveservices.QnAMakerRecognizer({
-    knowledgeBaseId: process.env.QnAKnowledgebaseId3,
-    authKey: process.env.QnAAuthKey3 || process.env.QnASubscriptionKey3, // Backward compatibility with QnAMaker (Preview)
-    endpointHostName: process.env.QnAEndpointHostName3
+  knowledgeBaseId: process.env.QnAKnowledgebaseId3,
+  authKey: process.env.QnAAuthKey3 || process.env.QnASubscriptionKey3, // Backward compatibility with QnAMaker (Preview)
+  endpointHostName: process.env.QnAEndpointHostName3
 });
 
 var thirdQnAMarkerDialog = new builder_cognitiveservices.QnAMakerDialog({
-    recognizers: [thirdrecognizer],
-    defaultMessage: 'No match! Try changing the query terms!',
-    qnaThreshold: 0.3
+  recognizers: [thirdrecognizer],
+  defaultMessage: 'No match! Try changing the query terms!',
+  qnaThreshold: 0.3
 });
 
 bot.dialog('basicQnAMakerDialog', basicQnAMakerDialog);
@@ -181,7 +183,8 @@ bot.on('conversationUpdate', function (message) {
 
 bot.dialog('/',(session) => {
   session.endDialog();
-  session.replaceDialog("Greeting");
+  //session.replaceDialog("Greeting");
+  session.send("Diesen Befehl kenne ich leider nicht");
 
 }).triggerAction({
   matches: '/'
@@ -298,7 +301,7 @@ bot.dialog('SupportDialogeCar',(session) => {
   if (carCompany) {
     session.replaceDialog("/" + carCompany + "/manual");
   } else {
-    session.say("Ich weiß nicht in welchem Fahrzeug du dich befindest");
+    session.say("Ich weiß nicht in welchem Fahrzeug wir uns befinden.");
     session.replaceDialog("Greeting");
   }
 
@@ -317,9 +320,9 @@ bot.dialog('Welcome',(session) => {
 
   //session.say('miezekatze miezekatze miezekatze miezekatze');
   session.say("Hallo " + session.message.user.name);
-  session.replaceDialog("Greeting")
+  //session.replaceDialog("Greeting")
   session.endDialog();
-   
+
 }).triggerAction({
   matches: 'Welcome'
 });
@@ -706,26 +709,24 @@ bot.dialog('SupportDialogeBot',(session) => {
  * ToDo!!
  * 
  **********************************************************/
-  
- bot.dialog('LicencePlates', //Kennzeichen);
-    [
-        function (session) {
-            var qnaKnowledgebaseId = process.env.QnAKnowledgebaseId3;
-            var qnaAuthKey = process.env.QnAAuthKey3 || process.env.QnASubscriptionKey3;
-            var endpointHostName = process.env.QnAEndpointHostName3;
 
-            // QnA Subscription Key and KnowledgeBase Id null verification
-            if ((qnaAuthKey == null || qnaAuthKey == '') || (qnaKnowledgebaseId == null || qnaKnowledgebaseId == ''))
-                session.send('Please set QnAKnowledgebaseId, QnAAuthKey and QnAEndpointHostName (if applicable) in App Settings. Learn how to get them at https://aka.ms/qnaabssetup.');
-            else {
-                if (endpointHostName == null || endpointHostName == '')
-                    // Replace with Preview QnAMakerDialog service
-                    session.replaceDialog('basicQnAMakerthirdDialog');
-                else
-                    // Replace with GA QnAMakerDialog service
-                    session.replaceDialog('thirdQnAMarkerDialog');
-            }
-        }
-    ]);
-    
-   
+bot.dialog('LicencePlates', //Kennzeichen);
+  [
+    function (session) {
+      var qnaKnowledgebaseId = process.env.QnAKnowledgebaseId3;
+      var qnaAuthKey = process.env.QnAAuthKey3 || process.env.QnASubscriptionKey3;
+      var endpointHostName = process.env.QnAEndpointHostName3;
+
+      // QnA Subscription Key and KnowledgeBase Id null verification
+      if ((qnaAuthKey == null || qnaAuthKey == '') || (qnaKnowledgebaseId == null || qnaKnowledgebaseId == ''))
+        session.send('Please set QnAKnowledgebaseId, QnAAuthKey and QnAEndpointHostName (if applicable) in App Settings. Learn how to get them at https://aka.ms/qnaabssetup.');
+      else {
+        if (endpointHostName == null || endpointHostName == '')
+          // Replace with Preview QnAMakerDialog service
+          session.replaceDialog('basicQnAMakerthirdDialog');
+        else
+          // Replace with GA QnAMakerDialog service
+          session.replaceDialog('thirdQnAMarkerDialog');
+      }
+    }
+  ]);
