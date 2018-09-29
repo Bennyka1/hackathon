@@ -1,6 +1,4 @@
-const myObj = [
-    
-"Stimmt es, dass du gerne lachst?",
+const myObj1 = ["Stimmt es, dass du gerne lachst?",
 "Stimmt es, dass du gerne Fußball spielst?",
 "Stimmt es dass deine Eltern dich liebhaben?",
 "Stimmt es dass du gerne singst?",
@@ -44,11 +42,9 @@ const myObj = [
 "Die Vereinsfarben des FC Barcelona sind Blau-Rot.",
 "Sind Sie nicht auch der Meinung, dass wir das wir schon viel zu lange Auto fahren?", 
 "Sind wir bald da?",
-"Ist das Wetter bei dir auch schön?",
-
-]
+"Ist das Wetter bei dir auch schön?",]
 
 exports.randomQuestion = () => {
-    const randomQuestion = Math.floor(Math.random() * Math.floor(47));
-    return myObj.janeinfrage[randomQuestion];
+    const randomQuestion = Math.floor(Math.random() * Math.floor(44));
+    return myObj1.JaNeinFrage[randomQuestion];
 };
