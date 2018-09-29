@@ -1,4 +1,5 @@
-const janeinfrage: [
+const Obj = {
+    janeinfrage: [
     "Stimmt es, dass du gerne lachst?",
     "Stimmt es, dass du gerne Fußball spielst?",
     "Stimmt es dass deine Eltern dich liebhaben?",
@@ -44,10 +45,12 @@ const janeinfrage: [
     "Sind Sie nicht auch der Meinung, dass wir das wir schon viel zu lange Auto fahren?",
     "Sind wir bald da?",
     "Ist das Wetter bei dir auch schön?"
-];
+]
+
+},
 
 
 exports.randomQuestion = () => {
     const randomQuestion = Math.floor(Math.random() * Math.floor(44));
-    return janeinfrage[randomQuestion];
+    return Obj.janeinfrage[randomQuestion];
 };
