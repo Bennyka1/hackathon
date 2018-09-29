@@ -809,5 +809,35 @@ bot.dialog('KeepCalm',(session) => {
   matches: 'KeepCalm'
 });
 
+bot.dialog('WetterDialog',
+    (session, args) => {
+        const townEntity = builder.EntityRecognizer.findEntity(args.intent.entities, "Weather.Location");
+        const weatherForUser = getWeatherByTown(townEntity.entity.toString());
+
+        function getWeatherByTown(city) {
+            let result = "";
+            console.log(city);
+            let apiKey = '0e2122affce517b253a8827ae50ba155';
+            let url = `http://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}`;
+            request(url, function (err, response, body) {
+                if (err) {
+                    console.log('error:', error);
+                    session.say("Hat nicht geklappt!");
+                    session.endDialog();
+                } else {
+                    let weather = JSON.parse(body);
+                    let message = `Es ist ${weather.main.temp} grad in ${weather.name}!`;
+                    console.log("ElseErgebnis: " + message);
+                    session.say(message);
+                    session.endDialog();
+                }
+            });
+        }
+
+    }
+    ).triggerAction({
+    matches: 'Wetter'
+});
+
 
 
