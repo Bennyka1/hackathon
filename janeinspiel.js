@@ -50,5 +50,5 @@ const myObj = [
 
 exports.randomQuestion = () => {
     const randomQuestion = Math.floor(Math.random() * Math.floor(47));
-    return myObj.QuestionAnswer[randomQuestion];
+    return myObj.janeinfrage[randomQuestion];
 };

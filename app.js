@@ -7,6 +7,7 @@ var builder = require('botbuilder');
 var botbuilder_azure = require("botbuilder-azure");
 var builder_cognitiveservices = require("botbuilder-cognitiveservices");
 const jokes = require("./Jokes");
+const question = require("./janeinspiel");
 var msg;
 var ausgedachtezahl;
 var carCompany;
@@ -809,5 +810,28 @@ bot.dialog('KeepCalm',(session) => {
   matches: 'KeepCalm'
 });
 
+/*********************************************************
+ * 
+ * Ja/Nein Spiel 
+ * 
+ * 
+ **********************************************************/
+
+bot.dialog('JaNeinSpiel',
+  (session) => {
+   
+    do {  let janeinfrage = question.randomQuestion();
+      session.send(janeinfrage.toString());
+    }
+    while (session.message.text != 'Ja' || session.message.text != 'Nein');
+
+    if (session.message.text == 'Ja' || session.message.text == 'Nein' ) {
+      session.send('Du hast verloren.')}
+   
+    session.endDialog();
+  }
+  ).triggerAction({
+  matches: 'JaNeinSpiel'
+});
 
 
