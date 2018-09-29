@@ -728,8 +728,10 @@ bot.dialog('SupportDialogeBot',(session) => {
         }
     ]);
 
- /* 
- * Ich sehe was, was du nicht siehst 
+/*********************************************************
+ * 
+ * Ich sehe was, was du nicht siehst
+ * ToDo!!
  * 
  **********************************************************/
 
@@ -741,4 +743,18 @@ bot.dialog('IchSeheWas',(session) => {
   matches: 'IchSeheWas'
 });
 
-   
+/*********************************************************
+ * 
+ * Chit Chat 
+ * ToDo!!
+ * 
+ **********************************************************/
+
+bot.dialog('WerBistDU',(session) => {
+  session.say("Ich bin Buddy, der beste Beifahrer der Welt. Sag mir, wie ich dir helfen kann!");
+}
+  ).triggerAction({
+  matches: 'WerBistDu'
+});
+
+
