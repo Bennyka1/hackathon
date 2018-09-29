@@ -12,6 +12,7 @@ var ausgedachtezahl;
 var carCompany;
 
 var symbolcomputer;
+var weisheit
 var symbolspieler;
 var anzahlrunden = 0;
 var gewinnecomputer = 0;
@@ -779,5 +780,34 @@ bot.dialog('ChitChatAnswer', (session) => {
 }).triggerAction({
   matches: 'ChitChatAnswer'
 });
+
+
+function randomanswer() {
+
+  ausgedachtezahl = Math.random() * 3;
+  ausgedachtezahl = Math.round(ausgedachtezahl + 0.5);
+
+  if (ausgedachtezahl == 1) {
+    weisheit = "Du musst mit den Fehlern anderer rechnen."
+  };
+  if (ausgedachtezahl == 2) {
+    weisheit = "Fordere viel von dir selbst und erwarte wenig von den anderen. So wird dir Ärger erspart bleiben.";
+  };
+  if (ausgedachtezahl == 3) {
+    weisheit = "Bleibe ruig und konzentriere dich auf dich selbst.";
+  };
+
+}
+
+bot.dialog('KeepCalm',(session) => {
+
+  randomanswer();
+
+  session.send(weisheit);
+
+}).triggerAction({
+  matches: 'KeepCalm'
+});
+
 
 
