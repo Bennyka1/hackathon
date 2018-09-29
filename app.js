@@ -757,4 +757,27 @@ bot.dialog('WerBistDU',(session) => {
   matches: 'WerBistDu'
 });
 
+bot.dialog('ChitChat', (session) => {
+  session.say("Mir geht es gut. Geht es dir gut?");
+
+  
+}).triggerAction({
+  matches: 'ChitChat'
+});
+
+bot.dialog('ChitChatAnswer', (session) => {
+
+  if (session.message.text == "Ja") {
+    session.send('Das ist schön. Wenn du die Welt anlachst, dann lacht die Welt zurück.');
+  }
+  if (session.message.text == "Nein") {
+   session.send('Kann ich dich aufmuntern? Sag mir, dass ich dir einen Witz erzählen soll.');
+  }
+
+    session.endDialog();
+
+}).triggerAction({
+  matches: 'ChitChatAnswer'
+});
+
 
