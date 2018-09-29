@@ -75,7 +75,7 @@ var previewRecognizer = new builder_cognitiveservices.QnAMakerRecognizer({
 
 var basicQnAMakerPreviewDialog = new builder_cognitiveservices.QnAMakerDialog({
   recognizers: [previewRecognizer],
-  defaultMessage: 'No match! Try changing the query terms!',
+  defaultMessage: 'Zu dieser Frage wurde leider nichts gefunden. Versuche deine Frage anders zu stellen.',
   qnaThreshold: 0.3
 }
   );
@@ -87,7 +87,7 @@ var secondRecognizer = new builder_cognitiveservices.QnAMakerRecognizer({
 
 var secondQnAMakerPreviewDialog = new builder_cognitiveservices.QnAMakerDialog({
   recognizers: [secondRecognizer],
-  defaultMessage: 'No match! Try changing the query terms!',
+  defaultMessage: 'Zu dieser Frage wurde leider nichts gefunden. Versuche deine Frage anders zu stellen.',
   qnaThreshold: 0.3
 }
   );
@@ -100,7 +100,7 @@ var thirdRecognizer = new builder_cognitiveservices.QnAMakerRecognizer({
 
 var basicQnAMakerthirdDialog = new builder_cognitiveservices.QnAMakerDialog({
   recognizers: [thirdRecognizer],
-  defaultMessage: 'No match! Try changing the query terms!',
+  defaultMessage: 'Zu dieser Frage wurde leider nichts gefunden. Versuche deine Frage anders zu stellen.',
   qnaThreshold: 0.3
 }
   );
@@ -118,7 +118,7 @@ var recognizer = new builder_cognitiveservices.QnAMakerRecognizer({
 
 var basicQnAMakerDialog = new builder_cognitiveservices.QnAMakerDialog({
   recognizers: [recognizer],
-  defaultMessage: 'No match! Try changing the query terms!',
+  defaultMessage: 'Zu dieser Frage wurde leider nichts gefunden. Versuche deine Frage anders zu stellen.',
   qnaThreshold: 0.3
 }
   );
@@ -131,7 +131,7 @@ var secondrecognizer = new builder_cognitiveservices.QnAMakerRecognizer({
 
 var secondQnAMakerDialog = new builder_cognitiveservices.QnAMakerDialog({
   recognizers: [secondrecognizer],
-  defaultMessage: 'No match! Try changing the query terms!',
+  defaultMessage: 'Zu dieser Frage wurde leider nichts gefunden. Versuche deine Frage anders zu stellen.',
   qnaThreshold: 0.3
 }
   );
@@ -145,7 +145,7 @@ var thirdrecognizer = new builder_cognitiveservices.QnAMakerRecognizer({
 
 var thirdQnAMarkerDialog = new builder_cognitiveservices.QnAMakerDialog({
   recognizers: [thirdrecognizer],
-  defaultMessage: 'No match! Try changing the query terms!',
+  defaultMessage: 'Zu dieser Frage wurde leider nichts gefunden. Versuche deine Frage anders zu stellen.',
   qnaThreshold: 0.3
 });
 
@@ -155,9 +155,7 @@ bot.dialog('thirdQnAMarkerDialog', thirdQnAMarkerDialog);
 
 /*********************************************************
  * 
- * Welcome Message
- * ToDo
- * 
+ * Welcome Message 
  * 
  **********************************************************/
 
@@ -176,15 +174,14 @@ bot.on('conversationUpdate', function (message) {
 /*********************************************************
  * 
  * Default Indent
- * ToDo
- * 
  * 
  **********************************************************/
 
 bot.dialog('/',(session) => {
   session.endDialog();
   //session.replaceDialog("Greeting");
-  session.send("Diesen Befehl kenne ich leider nicht");
+  session.send("Diesen Befehl kenne ich leider nicht.");
+  session.send("Versuche deine Frage anders zu stellen.");
 
 }).triggerAction({
   matches: '/'
@@ -192,9 +189,7 @@ bot.dialog('/',(session) => {
 
 /*********************************************************
  * 
- * Schere Stein Papier [Entwurf]
- * ToDo!!
- * 
+ * Schere Stein Papier
  * 
  **********************************************************/
 
@@ -291,8 +286,7 @@ bot.dialog('SchereSteinPapierAntwort',(session) => {
 
 /*********************************************************
  * 
- * Select correct KnowledgeBase 
- * ToDo!!
+ * Select correct KnowledgeBase
  * 
  **********************************************************/
 
@@ -312,7 +306,6 @@ bot.dialog('SupportDialogeCar',(session) => {
 /*********************************************************
  * 
  * Greeting/Introduction Indent
- * ToDo!!
  * 
  **********************************************************/
 
@@ -423,7 +416,6 @@ bot.dialog('Greeting',(session) => {
 /*********************************************************
  * 
  * Smart Indent
- * ToDo!!
  * 
  **********************************************************/
 
@@ -472,7 +464,6 @@ bot.dialog('/Smart',(session) => {
   if (session.message && session.message.value) {
 
     if (session.message.value.Introduction) {
-      //session.send(session.message.value.Introduction);
       session.endDialog(session.message.value.Introduction);
 
       if (session.message.value.Introduction == "Ja") {
@@ -500,7 +491,6 @@ bot.dialog('/Smart',(session) => {
 /*********************************************************
  * 
  * Mercedes Indent
- * ToDo!!
  * 
  **********************************************************/
 
@@ -549,7 +539,6 @@ bot.dialog('/Mercedes',(session) => {
   if (session.message && session.message.value) {
 
     if (session.message.value.Introduction) {
-      //session.send(session.message.value.Introduction);
       session.endDialog(session.message.value.Introduction);
 
       if (session.message.value.Introduction == "Ja") {
@@ -614,7 +603,6 @@ bot.dialog('/Smart/Introduction',(session) => {
 /*********************************************************
  * 
  * Smart Manual Indent
- * ToDo!!
  * 
  **********************************************************/
 
@@ -643,7 +631,6 @@ bot.dialog('/Smart/manual', //basicQnAMakerDialog);
 /*********************************************************
  * 
  * Mercedes Manual Indent
- * ToDo!!
  * 
  **********************************************************/
 
@@ -671,7 +658,6 @@ bot.dialog('/Mercedes/manual', //basicQnAMakerDialog);
 /*********************************************************
  * 
  * Jokes Indent
- * ToDo!!
  * 
  **********************************************************/
 
@@ -688,8 +674,7 @@ bot.dialog('JokesDialog',
 
 /*********************************************************
  * 
- * Smart Indent
- * ToDo!!
+ * Help Indent
  * 
  **********************************************************/
 
@@ -706,7 +691,6 @@ bot.dialog('SupportDialogeBot',(session) => {
 /*********************************************************
  * 
  * Kennzeichen Indent
- * ToDo!!
  * 
  **********************************************************/
 
@@ -729,4 +713,6 @@ bot.dialog('LicencePlates', //Kennzeichen);
           session.replaceDialog('thirdQnAMarkerDialog');
       }
     }
-  ]);
+  ]).triggerAction({
+  matches: 'LicencePlates'
+});
