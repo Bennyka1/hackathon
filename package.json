@@ -20,14 +20,3 @@
     "zip-folder": "^1.0.0"
   }
 }
-{
-  "name": "wwo-api-with-node",
-  "version": "1.0.0",
-  "description": "A simple five day weather forecast using the WWO API",
-  "dependencies": {
-      "express": "4.2.x",
-      "request": "^2.53.0"
-  },
-  "private": true,
-  "license": "MIT"
-}

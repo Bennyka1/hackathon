@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------------------
-A simple echo bot for the Microsoft Bot Framework. 
+The MSG Buddy Bot.
 -----------------------------------------------------------------------------*/
 
 var restify = require('restify');
@@ -7,17 +7,21 @@ var builder = require('botbuilder');
 var botbuilder_azure = require("botbuilder-azure");
 var builder_cognitiveservices = require("botbuilder-cognitiveservices");
 const jokes = require("./Jokes");
+const request = require("request");
 var msg;
 var ausgedachtezahl;
 var carCompany;
 
 var symbolcomputer;
-var weisheit
 var symbolspieler;
 var anzahlrunden = 0;
 var gewinnecomputer = 0;
 var gewinnespieler = 0;
 var gewinnbedingung = 3;
+
+var fahrzeugwahl = 0;
+
+
 
 // Setup Restify Server
 var server = restify.createServer();
@@ -60,7 +64,7 @@ var luisAppId = process.env.LuisAppId;
 var luisAPIKey = process.env.LuisAPIKey;
 var luisAPIHostName = process.env.LuisAPIHostName || 'westeurope.api.cognitive.microsoft.com';
 
-var LuisModelUrl = 'https://westeurope.api.cognitive.microsoft.com/luis/v2.0/apps/0d3222b3-0b5f-48ce-b5cd-ffd99b01e9ea?subscription-key=18a62222b9aa4d2c96f6dbc4eeb7b738&spellCheck=true&bing-spell-check-subscription-key={YOUR_BING_KEY_HERE}&timezoneOffset=60&q=';
+var LuisModelUrl = 'https://westeurope.api.cognitive.microsoft.com/luis/v2.0/apps/f8681756-c53a-459a-b65e-48499f6ed234?subscription-key=f8865d9f11b94574a2255412478c5e0a&timezoneOffset=60&q=';
 
 // Create a recognizer that gets intents from LUIS, and add it to the bot
 var recognizer = new builder.LuisRecognizer(LuisModelUrl);
@@ -74,7 +78,7 @@ var previewRecognizer = new builder_cognitiveservices.QnAMakerRecognizer({
 
 var basicQnAMakerPreviewDialog = new builder_cognitiveservices.QnAMakerDialog({
   recognizers: [previewRecognizer],
-  defaultMessage: 'No match! Try changing the query terms!',
+  defaultMessage: 'Zu dieser Frage wurde leider nichts gefunden. Versuche deine Frage anders zu stellen.',
   qnaThreshold: 0.3
 }
   );
@@ -86,23 +90,23 @@ var secondRecognizer = new builder_cognitiveservices.QnAMakerRecognizer({
 
 var secondQnAMakerPreviewDialog = new builder_cognitiveservices.QnAMakerDialog({
   recognizers: [secondRecognizer],
-  defaultMessage: 'No match! Try changing the query terms!',
+  defaultMessage: 'Zu dieser Frage wurde leider nichts gefunden. Versuche deine Frage anders zu stellen.',
   qnaThreshold: 0.3
 }
   );
   
 // Recognizer and and Dialog for preview QnAMaker service
 var thirdRecognizer = new builder_cognitiveservices.QnAMakerRecognizer({
-    knowledgeBaseId: process.env.QnAKnowledgebaseId3,
-    authKey: process.env.QnAAuthKey3 || process.env.QnASubscriptionKey3
+  knowledgeBaseId: process.env.QnAKnowledgebaseId3,
+  authKey: process.env.QnAAuthKey3 || process.env.QnASubscriptionKey3
 });
 
 var basicQnAMakerthirdDialog = new builder_cognitiveservices.QnAMakerDialog({
-    recognizers: [thirdRecognizer],
-    defaultMessage: 'No match! Try changing the query terms!',
-    qnaThreshold: 0.3
+  recognizers: [thirdRecognizer],
+  defaultMessage: 'Zu dieser Frage wurde leider nichts gefunden. Versuche deine Frage anders zu stellen.',
+  qnaThreshold: 0.3
 }
-);
+  );
 
 bot.dialog('basicQnAMakerPreviewDialog', basicQnAMakerPreviewDialog);
 bot.dialog('secondQnAMakerPreviewDialog', secondQnAMakerPreviewDialog);
@@ -117,7 +121,7 @@ var recognizer = new builder_cognitiveservices.QnAMakerRecognizer({
 
 var basicQnAMakerDialog = new builder_cognitiveservices.QnAMakerDialog({
   recognizers: [recognizer],
-  defaultMessage: 'No match! Try changing the query terms!',
+  defaultMessage: 'Zu dieser Frage wurde leider nichts gefunden. Versuche deine Frage anders zu stellen.',
   qnaThreshold: 0.3
 }
   );
@@ -130,22 +134,22 @@ var secondrecognizer = new builder_cognitiveservices.QnAMakerRecognizer({
 
 var secondQnAMakerDialog = new builder_cognitiveservices.QnAMakerDialog({
   recognizers: [secondrecognizer],
-  defaultMessage: 'No match! Try changing the query terms!',
+  defaultMessage: 'Zu dieser Frage wurde leider nichts gefunden. Versuche deine Frage anders zu stellen.',
   qnaThreshold: 0.3
 }
   );
   
-  // Recognizer and and Dialog for GA QnAMaker service
+// Recognizer and and Dialog for GA QnAMaker service
 var thirdrecognizer = new builder_cognitiveservices.QnAMakerRecognizer({
-    knowledgeBaseId: process.env.QnAKnowledgebaseId3,
-    authKey: process.env.QnAAuthKey3 || process.env.QnASubscriptionKey3, // Backward compatibility with QnAMaker (Preview)
-    endpointHostName: process.env.QnAEndpointHostName3
+  knowledgeBaseId: process.env.QnAKnowledgebaseId3,
+  authKey: process.env.QnAAuthKey3 || process.env.QnASubscriptionKey3, // Backward compatibility with QnAMaker (Preview)
+  endpointHostName: process.env.QnAEndpointHostName3
 });
 
 var thirdQnAMarkerDialog = new builder_cognitiveservices.QnAMakerDialog({
-    recognizers: [thirdrecognizer],
-    defaultMessage: 'No match! Try changing the query terms!',
-    qnaThreshold: 0.3
+  recognizers: [thirdrecognizer],
+  defaultMessage: 'Zu dieser Frage wurde leider nichts gefunden. Versuche deine Frage anders zu stellen.',
+  qnaThreshold: 0.3
 });
 
 bot.dialog('basicQnAMakerDialog', basicQnAMakerDialog);
@@ -154,9 +158,7 @@ bot.dialog('thirdQnAMarkerDialog', thirdQnAMarkerDialog);
 
 /*********************************************************
  * 
- * Welcome Message
- * ToDo
- * 
+ * Welcome Message 
  * 
  **********************************************************/
 
@@ -175,14 +177,14 @@ bot.on('conversationUpdate', function (message) {
 /*********************************************************
  * 
  * Default Indent
- * ToDo
- * 
  * 
  **********************************************************/
 
 bot.dialog('/',(session) => {
   session.endDialog();
-  session.replaceDialog("Greeting");
+  //session.replaceDialog("Greeting");
+  session.send("Diesen Befehl kenne ich leider nicht.");
+  session.send("Versuche deine Frage anders zu stellen.");
 
 }).triggerAction({
   matches: '/'
@@ -190,9 +192,7 @@ bot.dialog('/',(session) => {
 
 /*********************************************************
  * 
- * Schere Stein Papier [Entwurf]
- * ToDo!!
- * 
+ * Schere Stein Papier
  * 
  **********************************************************/
 
@@ -289,8 +289,7 @@ bot.dialog('SchereSteinPapierAntwort',(session) => {
 
 /*********************************************************
  * 
- * Select correct KnowledgeBase 
- * ToDo!!
+ * Select correct KnowledgeBase
  * 
  **********************************************************/
 
@@ -299,7 +298,7 @@ bot.dialog('SupportDialogeCar',(session) => {
   if (carCompany) {
     session.replaceDialog("/" + carCompany + "/manual");
   } else {
-    session.say("Ich weiß nicht in welchem Fahrzeug du dich befindest");
+    session.say("Ich weiß nicht in welchem Fahrzeug wir uns befinden.");
     session.replaceDialog("Greeting");
   }
 
@@ -310,7 +309,6 @@ bot.dialog('SupportDialogeCar',(session) => {
 /*********************************************************
  * 
  * Greeting/Introduction Indent
- * ToDo!!
  * 
  **********************************************************/
 
@@ -318,9 +316,9 @@ bot.dialog('Welcome',(session) => {
 
   //session.say('miezekatze miezekatze miezekatze miezekatze');
   session.say("Hallo " + session.message.user.name);
-  session.replaceDialog("Greeting")
+  //session.replaceDialog("Greeting")
   session.endDialog();
-   
+
 }).triggerAction({
   matches: 'Welcome'
 });
@@ -421,7 +419,6 @@ bot.dialog('Greeting',(session) => {
 /*********************************************************
  * 
  * Smart Indent
- * ToDo!!
  * 
  **********************************************************/
 
@@ -460,7 +457,7 @@ bot.dialog('/Smart',(session) => {
           "type": "Action.Submit",
           "title": "Nein",
           "data": {
-            "Introduction": "Nein."
+            "Introduction": "Nein"
           }
         }
       ]
@@ -470,7 +467,6 @@ bot.dialog('/Smart',(session) => {
   if (session.message && session.message.value) {
 
     if (session.message.value.Introduction) {
-      //session.send(session.message.value.Introduction);
       session.endDialog(session.message.value.Introduction);
 
       if (session.message.value.Introduction == "Ja") {
@@ -478,17 +474,27 @@ bot.dialog('/Smart',(session) => {
         session.replaceDialog("/Smart/Introduction");
       }
 
+      if (session.message.value.Introduction == "Nein") {
+        session.endDialog("Gute Fahrt!");
+      }
+
     } else {
       session.send(msg);
     }
 
   } else {
+
     if (session.message.text == "Ja") {
-      session.endDialog();
       session.replaceDialog("/Smart/Introduction");
-    } else {
-      session.send(msg);
+      session.endDialog();
     }
+
+    if (session.message.text == "Nein") {
+      session.endDialog("Gute Fahrt! :-)");
+    }
+
+    session.send(msg);
+
   }
 
 }).triggerAction({
@@ -498,7 +504,6 @@ bot.dialog('/Smart',(session) => {
 /*********************************************************
  * 
  * Mercedes Indent
- * ToDo!!
  * 
  **********************************************************/
 
@@ -547,7 +552,6 @@ bot.dialog('/Mercedes',(session) => {
   if (session.message && session.message.value) {
 
     if (session.message.value.Introduction) {
-      //session.send(session.message.value.Introduction);
       session.endDialog(session.message.value.Introduction);
 
       if (session.message.value.Introduction == "Ja") {
@@ -612,7 +616,6 @@ bot.dialog('/Smart/Introduction',(session) => {
 /*********************************************************
  * 
  * Smart Manual Indent
- * ToDo!!
  * 
  **********************************************************/
 
@@ -641,7 +644,6 @@ bot.dialog('/Smart/manual', //basicQnAMakerDialog);
 /*********************************************************
  * 
  * Mercedes Manual Indent
- * ToDo!!
  * 
  **********************************************************/
 
@@ -669,7 +671,6 @@ bot.dialog('/Mercedes/manual', //basicQnAMakerDialog);
 /*********************************************************
  * 
  * Jokes Indent
- * ToDo!!
  * 
  **********************************************************/
 
@@ -686,8 +687,7 @@ bot.dialog('JokesDialog',
 
 /*********************************************************
  * 
- * Smart Indent
- * ToDo!!
+ * Help Indent
  * 
  **********************************************************/
 
@@ -695,7 +695,8 @@ bot.dialog('SupportDialogeBot',(session) => {
   session.say("Wir können Schere Stein Papier spielen");
   session.say("Ausserdem kann ich dir einen Witz erzählen");
   session.say("Ich kann dir sagen, zu welcher Stadt ein bestimmtes Kennzeichen gehört");
-  session.say("Oder ich kann dir Fragen zu deinem Fahrzeug beantworten");
+  session.say("Ich kann dir Fragen zu deinem Fahrzeug beantworten");
+  session.say("Oder ich kann dir sagen wie das Wetter an einem beliebigen Ort ist.");
 }
   ).triggerAction({
   matches: 'SupportDialogeBot'
@@ -704,35 +705,35 @@ bot.dialog('SupportDialogeBot',(session) => {
 /*********************************************************
  * 
  * Kennzeichen Indent
- * ToDo!!
  * 
  **********************************************************/
-  
- bot.dialog('LicencePlates', //Kennzeichen);
-    [
-        function (session) {
-            var qnaKnowledgebaseId = process.env.QnAKnowledgebaseId3;
-            var qnaAuthKey = process.env.QnAAuthKey3 || process.env.QnASubscriptionKey3;
-            var endpointHostName = process.env.QnAEndpointHostName3;
 
-            // QnA Subscription Key and KnowledgeBase Id null verification
-            if ((qnaAuthKey == null || qnaAuthKey == '') || (qnaKnowledgebaseId == null || qnaKnowledgebaseId == ''))
-                session.send('Please set QnAKnowledgebaseId, QnAAuthKey and QnAEndpointHostName (if applicable) in App Settings. Learn how to get them at https://aka.ms/qnaabssetup.');
-            else {
-                if (endpointHostName == null || endpointHostName == '')
-                    // Replace with Preview QnAMakerDialog service
-                    session.replaceDialog('basicQnAMakerthirdDialog');
-                else
-                    // Replace with GA QnAMakerDialog service
-                    session.replaceDialog('thirdQnAMarkerDialog');
-            }
-        }
-    ]);
+bot.dialog('LicencePlates', //Kennzeichen);
+  [
+    function (session) {
+      var qnaKnowledgebaseId = process.env.QnAKnowledgebaseId3;
+      var qnaAuthKey = process.env.QnAAuthKey3 || process.env.QnASubscriptionKey3;
+      var endpointHostName = process.env.QnAEndpointHostName3;
+
+      // QnA Subscription Key and KnowledgeBase Id null verification
+      if ((qnaAuthKey == null || qnaAuthKey == '') || (qnaKnowledgebaseId == null || qnaKnowledgebaseId == ''))
+        session.send('Please set QnAKnowledgebaseId, QnAAuthKey and QnAEndpointHostName (if applicable) in App Settings. Learn how to get them at https://aka.ms/qnaabssetup.');
+      else {
+        if (endpointHostName == null || endpointHostName == '')
+          // Replace with Preview QnAMakerDialog service
+          session.replaceDialog('basicQnAMakerthirdDialog');
+        else
+          // Replace with GA QnAMakerDialog service
+          session.replaceDialog('thirdQnAMarkerDialog');
+      }
+    }
+  ]).triggerAction({
+  matches: 'LicencePlates'
+});
 
 /*********************************************************
  * 
  * Ich sehe was, was du nicht siehst
- * ToDo!!
  * 
  **********************************************************/
 
@@ -746,8 +747,7 @@ bot.dialog('IchSeheWas',(session) => {
 
 /*********************************************************
  * 
- * Chit Chat 
- * ToDo!!
+ * Chit Chat
  * 
  **********************************************************/
 
@@ -758,30 +758,30 @@ bot.dialog('WerBistDU',(session) => {
   matches: 'WerBistDu'
 });
 
-bot.dialog('ChitChat', (session) => {
+bot.dialog('ChitChat',(session) => {
   session.say("Mir geht es gut. Geht es dir gut?");
 
-  
+
 }).triggerAction({
   matches: 'ChitChat'
 });
 
-bot.dialog('ChitChatAnswer', (session) => {
+bot.dialog('ChitChatAnswer',(session) => {
 
   if (session.message.text == "Ja") {
     session.send('Das ist schön. Wenn du die Welt anlachst, dann lacht die Welt zurück.');
   }
   if (session.message.text == "Nein") {
-   session.send('Kann ich dich aufmuntern? Sag mir, dass ich dir einen Witz erzählen soll.');
+    session.send('Kann ich dich aufmuntern? Sag mir, dass ich dir einen Witz erzählen soll.');
   }
 
-    session.endDialog();
+  session.endDialog();
 
 }).triggerAction({
   matches: 'ChitChatAnswer'
 });
 
-
+//Keep Calm Message
 function randomanswer() {
 
   ausgedachtezahl = Math.random() * 3;
@@ -809,35 +809,37 @@ bot.dialog('KeepCalm',(session) => {
   matches: 'KeepCalm'
 });
 
+/*********************************************************
+ * 
+ * Wetter API
+ * 
+ **********************************************************/
+
 bot.dialog('WetterDialog',
-    (session, args) => {
-        const townEntity = builder.EntityRecognizer.findEntity(args.intent.entities, "Weather.Location");
-        const weatherForUser = getWeatherByTown(townEntity.entity.toString());
+  (session, args) => {
+    const townEntity = builder.EntityRecognizer.findEntity(args.intent.entities, "Weather.Location");
+    const weatherForUser = getWeatherByTown(townEntity.entity.toString());
 
-        function getWeatherByTown(city) {
-            let result = "";
-            console.log(city);
-            let apiKey = '0e2122affce517b253a8827ae50ba155';
-            let url = `http://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}`;
-            request(url, function (err, response, body) {
-                if (err) {
-                    console.log('error:', error);
-                    session.say("Hat nicht geklappt!");
-                    session.endDialog();
-                } else {
-                    let weather = JSON.parse(body);
-                    let message = `Es ist ${weather.main.temp} grad in ${weather.name}!`;
-                    console.log("ElseErgebnis: " + message);
-                    session.say(message);
-                    session.endDialog();
-                }
-            });
+    function getWeatherByTown(city) {
+      let result = "";
+      console.log(city);
+      let apiKey = '0e2122affce517b253a8827ae50ba155';
+      let url = `http://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}`;
+      request(url, function (err, response, body) {
+        if (err) {
+          console.log('error:', error);
+          session.say("Hat nicht geklappt!");
+          session.endDialog();
+        } else {
+          let weather = JSON.parse(body);
+          let message = `Es hat ${weather.main.temp} grad in ${weather.name}!`;
+          console.log("ElseErgebnis: " + message);
+          session.say(message);
+          session.endDialog();
         }
-
+      });
     }
-    ).triggerAction({
-    matches: 'Wetter'
+  }
+  ).triggerAction({
+  matches: 'Wetter'
 });
-
-
-
