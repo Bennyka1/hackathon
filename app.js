@@ -820,10 +820,12 @@ bot.dialog('KeepCalm',(session) => {
 bot.dialog('JaNeinSpiel',
   (session) => {
    
-    do {let JaNeinFrage = question.randomQuestion();
-      session.send(JaNeinFrage.toString());
+    do {let janeinfrage = question.randomQuestion();
+      session.send(janeinfrage.toString());
     }
     while (session.message.text != 'Ja' || session.message.text != 'Nein');
+    
+    session.say('Das Spiel ist beendet.')
    
     session.endDialog();
   }
