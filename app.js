@@ -8,6 +8,8 @@ var botbuilder_azure = require("botbuilder-azure");
 var builder_cognitiveservices = require("botbuilder-cognitiveservices");
 var msg;
 
+var jokes = require('./jokes');
+
 // Setup Restify Server
 var server = restify.createServer();
 
@@ -293,3 +295,75 @@ bot.dialog('/Smart/Introduction',(session) => {
 }).triggerAction({
   matches: '/Smart/Introduction'
 });
+
+
+bot.dialog('Jokes',(session) => {
+
+  var answer = jokes.randomJokeQuestion();
+
+  session.send(answer.Frage.value + answer.Antwort.value);
+  
+}).triggerAction({
+  matches: 'Jokes'
+});
+
+
+bot.dialog('SchereSteinPapier', (session) => {
+
+  var symbolcomputer;
+  var symbolspieler;
+  var anzahlrunden = 0;
+  var gewinnecomputer = 0;
+  var gewinnespieler = 0;
+  var gewinnbedingung = 3;
+
+  
+    var ausgedachtezahl = Math.random() * 3;
+    ausgedachtezahl = Math.round(ausgedachtezahl + 0, 5);
+
+    if (ausgedachtezahl == 1) {
+      symbolcomputer = "Schere"
+    };
+    if (ausgedachtezahl == 2) {
+      symbolcomputer = "Stein";
+    };
+    if (ausgedachtezahl == 3) {
+      symbolcomputer = "Papier";
+    };
+
+    session.send("Schere Stein oder Papier?")
+
+    if (bot.dialog('stein',(session) =>{
+      symbolspiele = "Stein";
+
+    }).triggerAction({
+      matches: 'stein'
+    })
+    
+    )
+
+    if (bot.dialog('schere',(session) =>{
+      symbolspiele = "Schere";
+    }).triggerAction({
+      matches: 'schere'
+    }))
+
+    if (bot.dialog('papier',(session) =>{
+      symbolspiele = "Papier";
+    }).triggerAction({
+      matches: 'papier'
+    }))
+
+    if (symbolspieler == symbolcomputer){
+      session.send("Spiel unentschieden")
+    }
+
+    if (symbolcomputer == "Schere" && symbolspieler =="Stein"){
+      session.send("Du gewinnst gegen Schere")
+      gewinnespieler++;
+    }
+
+
+  }).triggerAction({
+    matches: 'SchereSteinPapier'
+  });
