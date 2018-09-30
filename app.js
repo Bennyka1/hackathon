@@ -35,7 +35,7 @@ server.get(/\/?.*/, restify.plugins.serveStatic({
 server.listen(process.env.port || process.env.PORT || 3978, function () {
   console.log('%s listening to %s', server.name, server.url);
 });
-
+  
 // Create chat connector for communicating with the Bot Framework Service
 var connector = new builder.ChatConnector({
   appId: process.env.MicrosoftAppId,
@@ -82,7 +82,7 @@ var basicQnAMakerPreviewDialog = new builder_cognitiveservices.QnAMakerDialog({
   defaultMessage: 'Zu dieser Frage wurde leider nichts gefunden. Versuche deine Frage anders zu stellen.',
   qnaThreshold: 0.3
 }
-);
+  );
 
 var secondRecognizer = new builder_cognitiveservices.QnAMakerRecognizer({
   knowledgeBaseId: process.env.QnAKnowledgebaseId,
@@ -94,8 +94,8 @@ var secondQnAMakerPreviewDialog = new builder_cognitiveservices.QnAMakerDialog({
   defaultMessage: 'Zu dieser Frage wurde leider nichts gefunden. Versuche deine Frage anders zu stellen.',
   qnaThreshold: 0.3
 }
-);
-
+  );
+  
 // Recognizer and and Dialog for preview QnAMaker service
 var thirdRecognizer = new builder_cognitiveservices.QnAMakerRecognizer({
   knowledgeBaseId: process.env.QnAKnowledgebaseId3,
@@ -107,7 +107,7 @@ var basicQnAMakerthirdDialog = new builder_cognitiveservices.QnAMakerDialog({
   defaultMessage: 'Zu dieser Frage wurde leider nichts gefunden. Versuche deine Frage anders zu stellen.',
   qnaThreshold: 0.3
 }
-);
+  );
 
 bot.dialog('basicQnAMakerPreviewDialog', basicQnAMakerPreviewDialog);
 bot.dialog('secondQnAMakerPreviewDialog', secondQnAMakerPreviewDialog);
@@ -125,7 +125,7 @@ var basicQnAMakerDialog = new builder_cognitiveservices.QnAMakerDialog({
   defaultMessage: 'Zu dieser Frage wurde leider nichts gefunden. Versuche deine Frage anders zu stellen.',
   qnaThreshold: 0.3
 }
-);
+  );
 
 var secondrecognizer = new builder_cognitiveservices.QnAMakerRecognizer({
   knowledgeBaseId: process.env.QnAKnowledgebaseId,
@@ -138,8 +138,8 @@ var secondQnAMakerDialog = new builder_cognitiveservices.QnAMakerDialog({
   defaultMessage: 'Zu dieser Frage wurde leider nichts gefunden. Versuche deine Frage anders zu stellen.',
   qnaThreshold: 0.3
 }
-);
-
+  );
+  
 // Recognizer and and Dialog for GA QnAMaker service
 var thirdrecognizer = new builder_cognitiveservices.QnAMakerRecognizer({
   knowledgeBaseId: process.env.QnAKnowledgebaseId3,
@@ -181,7 +181,7 @@ bot.on('conversationUpdate', function (message) {
  * 
  **********************************************************/
 
-bot.dialog('/', (session) => {
+bot.dialog('/',(session) => {
   session.endDialog();
   //session.replaceDialog("Greeting");
   session.send("Diesen Befehl kenne ich leider nicht.");
@@ -214,7 +214,7 @@ function randomzahl() {
 
 }
 
-bot.dialog('SchereSteinPapier', (session) => {
+bot.dialog('SchereSteinPapier',(session) => {
 
   randomzahl();
 
@@ -225,7 +225,7 @@ bot.dialog('SchereSteinPapier', (session) => {
   matches: 'SchereSteinPapier'
 });
 
-bot.dialog('SchereSteinPapierAntwort', (session) => {
+bot.dialog('SchereSteinPapierAntwort',(session) => {
 
   randomzahl();
 
@@ -286,7 +286,7 @@ bot.dialog('SchereSteinPapierAntwort', (session) => {
   matches: 'SchereSteinPapierAntwort'
 });
 
-
+  
 
 /*********************************************************
  * 
@@ -294,7 +294,7 @@ bot.dialog('SchereSteinPapierAntwort', (session) => {
  * 
  **********************************************************/
 
-bot.dialog('SupportDialogeCar', (session) => {
+bot.dialog('SupportDialogeCar',(session) => {
 
   if (carCompany) {
     session.replaceDialog("/" + carCompany + "/manual");
@@ -313,90 +313,88 @@ bot.dialog('SupportDialogeCar', (session) => {
  * 
  **********************************************************/
 
-bot.dialog('Welcome', (session) => {
+bot.dialog('Welcome',(session) => {
 
-  //session.say('miezekatze miezekatze miezekatze miezekatze');
   session.say("Hallo " + session.message.user.name);
-  //session.replaceDialog("Greeting")
   session.endDialog();
 
 }).triggerAction({
   matches: 'Welcome'
 });
 
-bot.dialog('Greeting', (session) => {
+bot.dialog('Greeting',(session) => {
   msg = new builder.Message(session)
     .addAttachment({
-      contentType: "application/vnd.microsoft.card.adaptive",
-      content: {
-        "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
-        "type": "AdaptiveCard",
-        "speak": "Mit welchem Fahrzeug fährst du heute?",
-        "version": "1.0",
-        "body": [
-          {
-            "type": "TextBlock",
-            "text": "Fahrzeugauswahl",
-            "size": "large",
-            "weight": "bolder"
-          },
-          {
-            "type": "TextBlock",
-            "text": "Mit welchem Fahrzeug fährst du heute?",
-            "wrap": true
-          },
-          {
-            "type": "ColumnSet",
-            "columns": [
-              {
-                "type": "Column",
-                "items": [
-                  {
-                    "type": "TextBlock",
-                    "text": "Smart",
-                    "weight": "bolder"
-                  },
-                  {
-                    "type": "Image",
-                    "url": "http://smartkits.eu/2475-large_default/pulse-logo.jpg",
-                    "style": "default",
-                    "selectAction": {
-                      "type": "Action.Submit",
-                      "title": "OK",
-                      "data": {
-                        "Company": "Smart"
-                      }
+    contentType: "application/vnd.microsoft.card.adaptive",
+    content: {
+      "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+      "type": "AdaptiveCard",
+      "speak": "Mit welchem Fahrzeug fährst du heute?",
+      "version": "1.0",
+      "body": [
+        {
+          "type": "TextBlock",
+          "text": "Fahrzeugauswahl",
+          "size": "large",
+          "weight": "bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "Mit welchem Fahrzeug fährst du heute?",
+          "wrap": true
+        },
+        {
+          "type": "ColumnSet",
+          "columns": [
+            {
+              "type": "Column",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": "Smart",
+                  "weight": "bolder"
+                },
+                {
+                  "type": "Image",
+                  "url": "http://smartkits.eu/2475-large_default/pulse-logo.jpg",
+                  "style": "default",
+                  "selectAction": {
+                    "type": "Action.Submit",
+                    "title": "OK",
+                    "data": {
+                      "Company": "Smart"
                     }
                   }
-                ]
-              },
-              {
-                "type": "Column",
-                "items": [
-                  {
-                    "type": "TextBlock",
-                    "text": "Mercedes",
-                    "weight": "bolder"
-                  },
-                  {
-                    "type": "Image",
-                    "url": "https://images-na.ssl-images-amazon.com/images/I/61VaoHj7IbL._SX425_.jpg",
-                    "style": "default",
-                    "selectAction": {
-                      "type": "Action.Submit",
-                      "title": "OK",
-                      "data": {
-                        "Company": "Mercedes"
-                      }
+                }
+              ]
+            },
+            {
+              "type": "Column",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": "Mercedes",
+                  "weight": "bolder"
+                },
+                {
+                  "type": "Image",
+                  "url": "https://images-na.ssl-images-amazon.com/images/I/61VaoHj7IbL._SX425_.jpg",
+                  "style": "default",
+                  "selectAction": {
+                    "type": "Action.Submit",
+                    "title": "OK",
+                    "data": {
+                      "Company": "Mercedes"
                     }
                   }
-                ]
-              },
-            ]
-          }
-        ]
-      }
-    });
+                }
+              ]
+            },
+          ]
+        }
+      ]
+    }
+  });
 
   if (session.message && session.message.value) {
 
@@ -423,47 +421,47 @@ bot.dialog('Greeting', (session) => {
  * 
  **********************************************************/
 
-bot.dialog('/Smart', (session) => {
+bot.dialog('/Smart',(session) => {
   carCompany = "Smart";
 
   msg = new builder.Message(session)
     .addAttachment({
-      contentType: "application/vnd.microsoft.card.adaptive",
-      content: {
-        "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
-        "type": "AdaptiveCard",
-        "version": "1.0",
-        "speak": "Möchtest du eine kurze Einführung haben?",
-        "body": [
-          {
-            "type": "TextBlock",
-            "text": "Einführung in Fahrzeug",
-            "size": "large",
-            "weight": "bolder"
-          },
-          {
-            "type": "TextBlock",
-            "text": "Soll ich dir eine kurze Einführung zeigen?",
-          },
-        ],
-        "actions": [
-          {
-            "type": "Action.Submit",
-            "title": "Ja",
-            "data": {
-              "Introduction": "Ja"
-            }
-          },
-          {
-            "type": "Action.Submit",
-            "title": "Nein",
-            "data": {
-              "Introduction": "Nein"
-            }
+    contentType: "application/vnd.microsoft.card.adaptive",
+    content: {
+      "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+      "type": "AdaptiveCard",
+      "version": "1.0",
+      "speak": "Möchtest du eine kurze Einführung haben?",
+      "body": [
+        {
+          "type": "TextBlock",
+          "text": "Einführung in Fahrzeug",
+          "size": "large",
+          "weight": "bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "Soll ich dir eine kurze Einführung zeigen?",
+        },
+      ],
+      "actions": [
+        {
+          "type": "Action.Submit",
+          "title": "Ja",
+          "data": {
+            "Introduction": "Ja"
           }
-        ]
-      }
-    });
+        },
+        {
+          "type": "Action.Submit",
+          "title": "Nein",
+          "data": {
+            "Introduction": "Nein"
+          }
+        }
+      ]
+    }
+  });
 
   if (session.message && session.message.value) {
 
@@ -508,47 +506,47 @@ bot.dialog('/Smart', (session) => {
  * 
  **********************************************************/
 
-bot.dialog('/Mercedes', (session) => {
+bot.dialog('/Mercedes',(session) => {
   carCompany = "Mercedes";
 
   msg = new builder.Message(session)
     .addAttachment({
-      contentType: "application/vnd.microsoft.card.adaptive",
-      content: {
-        "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
-        "type": "AdaptiveCard",
-        "version": "1.0",
-        "speak": "Möchtest du eine kurze Einführung haben?",
-        "body": [
-          {
-            "type": "TextBlock",
-            "text": "Einführung in Fahrzeug",
-            "size": "large",
-            "weight": "bolder"
-          },
-          {
-            "type": "TextBlock",
-            "text": "Soll ich dir eine kurze Einführung zeigen?",
-          },
-        ],
-        "actions": [
-          {
-            "type": "Action.Submit",
-            "title": "Ja",
-            "data": {
-              "Introduction": "Ja"
-            }
-          },
-          {
-            "type": "Action.Submit",
-            "title": "Nein",
-            "data": {
-              "Introduction": "Nein"
-            }
+    contentType: "application/vnd.microsoft.card.adaptive",
+    content: {
+      "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+      "type": "AdaptiveCard",
+      "version": "1.0",
+      "speak": "Möchtest du eine kurze Einführung haben?",
+      "body": [
+        {
+          "type": "TextBlock",
+          "text": "Einführung in Fahrzeug",
+          "size": "large",
+          "weight": "bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "Soll ich dir eine kurze Einführung zeigen?",
+        },
+      ],
+      "actions": [
+        {
+          "type": "Action.Submit",
+          "title": "Ja",
+          "data": {
+            "Introduction": "Ja"
           }
-        ]
-      }
-    });
+        },
+        {
+          "type": "Action.Submit",
+          "title": "Nein",
+          "data": {
+            "Introduction": "Nein"
+          }
+        }
+      ]
+    }
+  });
 
   if (session.message && session.message.value) {
 
@@ -587,7 +585,7 @@ bot.dialog('/Mercedes', (session) => {
   matches: '/Mercedes'
 });
 
-bot.dialog('/Mercedes/Introduction', (session) => {
+bot.dialog('/Mercedes/Introduction',(session) => {
   session.say('Bei der elektronischen Sitzeinstellung , kannst du über die Sitzknöpfe in der Türtafel die Sitzposition einstellen');
   session.say('Bei der mechanischen Sitzeinstellung, kannst du den Sitz über die vorhandenen Hebel einstellen');
   session.say('Bei der elektronischen Lenkradverstellung, kannst du mit dem mittleren Hebel, Einstellungen vornehmen');
@@ -601,7 +599,7 @@ bot.dialog('/Mercedes/Introduction', (session) => {
   matches: '/Mercedes/Introduction'
 });
 
-bot.dialog('/Smart/Introduction', (session) => {
+bot.dialog('/Smart/Introduction',(session) => {
   session.say('Wenn du den Hebel unter deinem Sitz anhebst kannst du den Sitz vor oder zurückschieben');
   session.say('Die Sitzhöhe kann mit dem Hebel unten links verstellt werden');
   session.say('Mit dem Handrad kann dann die Sitzlehne eingestellt werden');
@@ -682,7 +680,7 @@ bot.dialog('JokesDialog',
     session.send(questionAnswer.Antwort.toString());
     session.endDialog();
   }
-).triggerAction({
+  ).triggerAction({
   matches: 'Jokes'
 });
 
@@ -692,14 +690,15 @@ bot.dialog('JokesDialog',
  * 
  **********************************************************/
 
-bot.dialog('SupportDialogeBot', (session) => {
-  session.say("Wir können Schere Stein Papier spielen");
-  session.say("Ausserdem kann ich dir einen Witz erzählen");
+bot.dialog('SupportDialogeBot',(session) => {
+  session.say("Wir können Schere Stein Papier spielen.");
+  session.say("Ausserdem kann ich dir einen Witz erzählen.");
   session.say("Ich kann dir sagen, zu welcher Stadt ein bestimmtes Kennzeichen gehört");
-  session.say("Ich kann dir Fragen zu deinem Fahrzeug beantworten");
+  session.say("und ich kann dir Fragen zu deinem Fahrzeug beantworten.");
+  session.say("Ich kann dir die News von heute vorlesen.");
   session.say("Oder ich kann dir sagen wie das Wetter an einem beliebigen Ort ist.");
 }
-).triggerAction({
+  ).triggerAction({
   matches: 'SupportDialogeBot'
 });
 
@@ -729,8 +728,8 @@ bot.dialog('LicencePlates', //Kennzeichen);
       }
     }
   ]).triggerAction({
-    matches: 'LicencePlates'
-  });
+  matches: 'LicencePlates'
+});
 
 /*********************************************************
  * 
@@ -738,11 +737,11 @@ bot.dialog('LicencePlates', //Kennzeichen);
  * 
  **********************************************************/
 
-bot.dialog('IchSeheWas', (session) => {
+bot.dialog('IchSeheWas',(session) => {
   session.say("Okay, ich beginne. Ich sehe was, was du nicht siehst und das ist...");
   session.say("Oh, schon weg!");
 }
-).triggerAction({
+  ).triggerAction({
   matches: 'IchSeheWas'
 });
 
@@ -752,14 +751,14 @@ bot.dialog('IchSeheWas', (session) => {
  * 
  **********************************************************/
 
-bot.dialog('WerBistDU', (session) => {
+bot.dialog('WerBistDU',(session) => {
   session.say("Ich bin Buddy, der beste Beifahrer der Welt. Sag mir, wie ich dir helfen kann!");
 }
-).triggerAction({
+  ).triggerAction({
   matches: 'WerBistDu'
 });
 
-bot.dialog('ChitChat', (session) => {
+bot.dialog('ChitChat',(session) => {
   session.say("Mir geht es gut. Geht es dir gut?");
 
 
@@ -767,7 +766,7 @@ bot.dialog('ChitChat', (session) => {
   matches: 'ChitChat'
 });
 
-bot.dialog('ChitChatAnswer', (session) => {
+bot.dialog('ChitChatAnswer',(session) => {
 
   if (session.message.text == "Ja") {
     session.send('Das ist schön. Wenn du die Welt anlachst, dann lacht die Welt zurück.');
@@ -800,7 +799,7 @@ function randomanswer() {
 
 }
 
-bot.dialog('KeepCalm', (session) => {
+bot.dialog('KeepCalm',(session) => {
 
   randomanswer();
 
@@ -841,8 +840,22 @@ bot.dialog('WetterDialog',
       });
     }
   }
-).triggerAction({
+  ).triggerAction({
   matches: 'Wetter'
+});
+
+/*********************************************************
+ * 
+ * Bitte, Danke beendet Dialog
+ * 
+ **********************************************************/
+
+bot.dialog('BitteDanke',(session) => {
+  session.send('Bitte.');
+  session.endDialog();
+
+}).triggerAction({
+  matches: 'BitteDanke'
 });
 
 /*********************************************************
@@ -875,8 +888,8 @@ bot.dialog('NewsDialog',
         body = (JSON.parse(body));
         console.log('\nJSON Response:\n');
         console.log(body);
-        session.say("Das sind die Top 5 News für heute");
-        for (i = 0; i < 5; i++) {
+        session.say("Das sind die Top 3 News für heute");
+        for (i = 0; i < 3; i++) {
           session.say("Top " + (i + 1) + ":");
           session.say("Titel: " + body.value[i].name);
           session.say("Kurzbeschreibung: " + body.value[i].description);
