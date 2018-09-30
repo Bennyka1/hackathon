@@ -832,7 +832,7 @@ bot.dialog('WetterDialog',
           session.endDialog();
         } else {
           let weather = JSON.parse(body);
-          let message = `Es hat ${weather.main.temp} grad in ${weather.name}!`;
+          let message = `Es hat ${weather.main.temp} Grad in ${weather.name}!`;
           console.log("ElseErgebnis: " + message);
           session.say(message);
           session.endDialog();
@@ -842,4 +842,18 @@ bot.dialog('WetterDialog',
   }
   ).triggerAction({
   matches: 'Wetter'
+});
+
+/*********************************************************
+ * 
+ * Bitte, Danke
+ * 
+ **********************************************************/
+
+bot.dialog('BitteDanke',(session) => {
+  session.send('Bitte.');
+  session.endDialog();
+
+}).triggerAction({
+  matches: 'BitteDanke'
 });
